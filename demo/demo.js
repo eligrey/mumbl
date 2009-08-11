@@ -73,10 +73,11 @@
 			setTimeout(function() {
 				draggingPlayer = false;
 			}, 1);
-		})
-		.keydown(function(e) {
-			// TODO: keyboard controls
 		});
+		// TODO: keyboard controls
+		//.keydown(function(e) {
+		//
+		//});
 	
 	$(player)
 		.click(mouseMoveHandler)
