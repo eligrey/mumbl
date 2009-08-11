@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8" />
+<title>mumbl Demo</title>
+<link rel="stylesheet" href="css/ui-lightness/jquery-ui-1.7.2.custom.css"/>
+<style type="text/css">
+#mumbl-player {
+	width: 455px;
+	float: left;
+	overflow: hidden;
+	margin: 0 100% 5px 0;
+}
+.control {
+	margin-top: 3px;
+	cursor: pointer;
+}
+.ui-progressbar {
+	height: 22px;
+}
+.ui-progressbar-value {
+	background-image: url(progressbar-animation.gif);
+}
+.left {
+	float: left;
+}
+.right {
+	float: right;
+}
+#mumbl-next {
+	margin-right: 3px;
+}
+#mumbl-track-title {
+	width: 269px;
+	height: 22px;
+	float: left;
+	font-size: small;
+	margin-top: 3px;
+	margin-left: 5px;
+	text-align: left;
+	overflow: hidden;
+}
+</style>
+<script type="text/javascript" src="../mumbl.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.7/jquery-ui.min.js"></script>
+<!--<script type="text/javascript" src="http://www.schillmania.com/projects/soundmanager2/script/soundmanager2-nodebug-jsmin.js"></script>
+<script type="text/javascript">
+soundManager.url       = "path/to/soundmanager2/";
+soundManager.debugMode = false;
+</script>-->
+<script type="text/javascript">
+if (location.search === "?debug") {
+	document.title += " [Debug]";
+	//soundManager.debugMode = true;
+	document.documentElement.appendChild(document.createElement('script')).src='http://www.billyreisinger.com/jash/source/latest/Jash.js';
+}
+</script>
+</head>
+<body>
+<h1>mumbl Demo</h1>
+<div id="mumbl-player">
+  <div id="mumbl-progress">
+    <span id="mumbl-play-pause" class="left control ui-icon ui-icon ui-icon-play" title="Play"></span>
+    <span id="mumbl-loop" class="right control ui-icon ui-icon-radio-off" title="Looping Playlist"></span>
+    <span id="mumbl-volume" class="right control ui-icon ui-icon-volume-on" title="Mute: Off"></span>
+    <span id="mumbl-track-title"></span>
+    <span class="right">
+      <span id="mumbl-track-position">0:00</span>
+      <span>/</span>
+      <span id="mumbl-track-duration">0:00</span>
+    </span>
+    <span id="mumbl-next" class="right control ui-icon ui-icon-seek-next" title="Next Track"></span>
+    <span id="mumbl-prev" class="right control ui-icon ui-icon-seek-prev" title="Previous Track"></span>
+  </div>
+</div>
+<h2>Playlist</h2>
+<p>The music is by <a href="http://hyper-metrix.com/">@F1LT3R</a> (<a href="http://twitter.com/F1LT3R">Twitter page</a>).</p>
+<ol id="playlist">
+  <li onclick="mumbl.track(0);return false"><a href="music/%40F1LT3R%20-%20Cryogenic%20Unrest.ogg">Cryogenic Unrest</a></li>
+  <li onclick="mumbl.track(1);return false"><a href="music/%40F1LT3R%20-%20SOS%20Distress.ogg">SOS Distress</a></li>
+  <li onclick="mumbl.track(2);return false"><a href="music/%40F1LT3R%20-%20Disturbed%20Orbit.ogg">Disturbed Orbit</a></li>
+  <li onclick="mumbl.track(3);return false"><a href="music/%40F1LT3R%20-%20Ghosts%20in%20HyperSpace.ogg">Ghosts in HyperSpace</a></li>
+  <li onclick="mumbl.track(4);return false"><a href="music/%40F1LT3R%20-%20Binary%20Lovers.ogg">Binary Lovers</a></li>
+</ol>
+<script type="text/javascript" src="demo.js"></script>
+</body>
+</html>
