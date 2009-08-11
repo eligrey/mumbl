@@ -5,12 +5,17 @@ mumbl
 
 **mumbl** is a JavaScript library that makes it easy to play music and create playlists on web pages.
 
+Demo
+----
+
+A demo is included with mumbl but if you dont want to download it, there is also an [online demo][demo].
+
 Supported Platforms
 -------------------
 
  * All browsers that support HTML5 `<audio>` tags.
- * [Songbird][1]
- * [SoundManager 2][2] (not yet, but planned for version 0.1)
+ * [Songbird][sb]
+ * [SoundManager 2][sm2] (not yet, but planned for version 0.1)
 
 API
 ---
@@ -23,7 +28,7 @@ API
    * Stops playback if playing and resets the position of the currently selected track.
  * `mumbl.pause():void`
    * Pauses playback of the current track.
- * `mumbl.addTrack(\*TrackItem):void`
+ * `mumbl.addTrack(*TrackItem):void`
    * Adds `TrackItem` to the playlist.
  * `mumbl.addTracks(TrackItemList):void`
    * Adds every `TrackItem` in `TrackItemList` to the playlist.
@@ -132,7 +137,7 @@ mumbl has no known bugs!
 
 ### External bugs (problems with the players themselves):
 
- * Songbird's seek bar doesn't work for OGG files. ([Songbird bug 15169][3])
+ * Songbird's seek bar doesn't work for OGG files. ([Songbird bug 15169][bug15169])
    * **Solution**: Put MP3 files before OGG files in TrackItems.
  * Songbird reverts seeks right after you do them.
 
@@ -141,6 +146,7 @@ mumbl has no known bugs!
  * Google Chrome <= 3 does not fire the "ended" event when 
 
 
-  [1]: http://getsongbird.com/
-  [2]: http://www.schillmania.com/projects/soundmanager2/
-  [3]: http://bugzilla.songbirdnest.com/show_bug.cgi?id=15169
+  [demo]: http://purl.eligrey.com/mumbl/demo
+  [sb]: http://getsongbird.com/
+  [sm2]: http://www.schillmania.com/projects/soundmanager2/
+  [bug15169]: http://bugzilla.songbirdnest.com/show_bug.cgi?id=15169
