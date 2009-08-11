@@ -28,7 +28,7 @@ API
    * Stops playback if playing and resets the position of the currently selected track.
  * `mumbl.pause():void`
    * Pauses playback of the current track.
- * `mumbl.addTrack(*TrackItem):void`
+ * `mumbl.addTrack(TrackItem):void`
    * Adds `TrackItem` to the playlist.
  * `mumbl.addTracks(TrackItemList):void`
    * Adds every `TrackItem` in `TrackItemList` to the playlist.
@@ -118,8 +118,6 @@ The choices are in order of preference. If you do not know the media type of an 
 Roadmap
 -------
 
-(The term "mumbl module" refers to a JavaScript library that makes use of mumbl.)
-
  * Version 0.1
    * Add support for SoundManager2
    * Add playlist shuffle functionality.
@@ -129,6 +127,8 @@ Roadmap
    * Create a simple mumbl module for turning all MP3, OGG, and WAV links into mumbl-powered audio players.
    * Make the demo mumbl-powered music player portable and reusable as a mumbl module. (I'm thinking of naming it mumbl**r**)
      * Make the track title display scroll (maby using a `<marquee>`) when it overflows.
+
+(The term "mumbl module" refers to a JavaScript library that makes use of mumbl.)
 
 Known Bugs
 ----------
@@ -140,10 +140,6 @@ mumbl has no known bugs!
  * Songbird's seek bar doesn't work for OGG files. ([Songbird bug 15169][bug15169])
    * **Solution**: Put MP3 files before OGG files in TrackItems.
  * Songbird reverts seeks right after you do them.
-
-### External bugs of which mumbl includes built-in fixes
-
- * Google Chrome <= 3 does not fire the "ended" event when 
 
 
   [demo]: http://purl.eligrey.com/mumbl/demo
