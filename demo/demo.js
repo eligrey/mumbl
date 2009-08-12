@@ -8,16 +8,16 @@
 		"Disturbed Orbit",
 		"Ghosts in HyperSpace",
 		"Binary Lovers"
-	],
-	prefix = "music/%40F1LT3R%20-%20";
+	];
+	playlist.location = "music/%40F1LT3R%20-%20";
 
 	playlist.artist = "F1LT3R";
 	playlist.album  = "35 Days";
-
+    
 	for (var i = 0; i < playlist.length; i++) {
 		mumbl.addTrack(
-			prefix + encodeURIComponent(playlist[i]) + ".mp3", "audio/mpeg",
-			prefix + encodeURIComponent(playlist[i]) + ".ogg", "audio/ogg"
+			playlist.location + encodeURIComponent(playlist[i]) + ".ogg", "audio/ogg",
+			playlist.location + encodeURIComponent(playlist[i]) + ".mp3", "audio/mpeg"
 		);
 	}
 	
@@ -194,13 +194,6 @@
 		trackPosition.text(toMinsSecs(mumbl.position()));
 	}, 500);
 	
-	mumbl.onExternalPlayStateChange = function () {
-		changePlayIcon(mumbl.playing());
-	};
-	mumbl.onExternalMute = function () {
-		changeVolIcon(mumbl.mute());
-	};
-	
 	mumbl.onTrackChange = function() {
 		trackTitle.text(playlist[mumbl.track()] + " - " + playlist.album + " - " + playlist.artist);
 	};
@@ -213,3 +206,4 @@
 
 mumbl.volume(1);
 mumbl.track(0);
+mumbl.pause();
