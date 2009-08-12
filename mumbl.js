@@ -566,7 +566,7 @@
             onvolumechange_handler();
             onplaypause_handler();
             
-            if (window.chrome && navigator.appVersion.indexOf("Chrome/") !== -1) {
+            if (window.chrome) {
                 // http://code.google.com/p/chromium/issues/detail?id=16768
                 addEvent("timeupdate", function () {
                     (notEnded && player.ended && onended_handler());
