@@ -1,6 +1,6 @@
 /*
 * mumbl JavaScript Library v0.0.2
-* Last-modified: 2009-08-11
+* Last-modified: 2009-08-12
 * By Elijah Grey, http://eligrey.com
 *
 * See README.md for help
@@ -13,49 +13,8 @@
 
 "use strict";
 
-this.mumbl || (function () {
+(this.mumbl || (function () {
     var
-    window             = this,
-    
-    mumbl              = {
-        players: {
-            UNSUPPORTED   : 0,
-            HTML5_AUDIO   : 1,
-            SONGBIRD      : 2,
-            SOUNDMANAGER2 : 3,
-            addPlayer     : function (id) { // use this to add custom players
-                if (!(id in mumbl.players)) {
-                    mumbl.players[id] = ++players;
-                }
-            }
-        },
-        destruct: function () {
-            mumbl[$STOP$]();
-            delete window.mumbl;
-        }
-    },
-    
-    players            = 3,
-    
-    True               = true,
-    False              = false,
-    
-    doc                = document,
-    audio_elem         = doc.createElement("audio"),
-    
-    trackIndex         = 0,
-    looping            = 2, // 0 = no loop, 1 = loop track, 2 = loop playlist
-    duration           = 0,
-    volume             = 0,
-    playlistLength     = 0,
-    
-    muted              = False,
-    stopped            = True,
-    paused             = True,
-    shuffle            = False,
-    
-    player,
-    
     // change these to change the API
     // syntax: $PROPERTY_NAME$ = "propertyName",
     
@@ -86,6 +45,46 @@ this.mumbl || (function () {
     $TOGGLE_PAUSE$    = "togglePause",
     $MUTE$            = "mute",
     $SHUFFLE$         = "shuffle",
+    
+    window             = this,
+    players            = 3,
+    
+    mumbl              = {
+        players: {
+            UNSUPPORTED   : 0,
+            HTML5_AUDIO   : 1,
+            SONGBIRD      : 2,
+            SOUNDMANAGER2 : 3,
+            addPlayer     : function (id) { // use this to add custom players
+                if (!(id in mumbl.players)) {
+                    mumbl.players[id] = ++players;
+                }
+            }
+        },
+        destruct: function () {
+            mumbl[$STOP$]();
+            delete window.mumbl;
+        }
+    },
+    
+    True               = true,
+    False              = false,
+    
+    doc                = document,
+    audio_elem         = doc.createElement("audio"),
+    
+    trackIndex         = 0,
+    looping            = 2, // 0 = no loop, 1 = loop track, 2 = loop playlist
+    duration           = 0,
+    volume             = 0,
+    playlistLength     = 0,
+    
+    muted              = False,
+    stopped            = True,
+    paused             = True,
+    shuffle            = False,
+    
+    player,
     
     createEventHandler    = function (prop) {
         return function () {
@@ -226,7 +225,6 @@ this.mumbl || (function () {
             if (arguments.length > 2) { // more than one file specified
                 var args = Array.prototype.slice.call(arguments),
                 len = args.length,
-                files = [],
                 file,
                 i = 0;
                 
@@ -308,12 +306,12 @@ this.mumbl || (function () {
                 return trackIndex;
             }
             var wasPaused = paused;
-            notStartingToPlay = False;
+            notChangingPlayState = False;
             player.playMediaList(mediaList, index);
             if (wasPaused) {
                 mumbl[$PAUSE$]();
             }
-            notStartingToPlay = True;
+            notChangingPlayState = True;
         };
         mumbl[$REMOVE_TRACK$] = function (index) {
             mediaList.removeByIndex(index);
@@ -585,4 +583,4 @@ this.mumbl || (function () {
     }
     
     window.mumbl = mumbl;
-}.call(this));
+}.call(this)));
