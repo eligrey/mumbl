@@ -1,7 +1,7 @@
 mumbl
 =====
 
-*Version 0.0.1*
+*Version 0.0.2*
 
 **mumbl** is a JavaScript library that makes it easy to play music and create playlists on web pages.
 
@@ -23,20 +23,6 @@ Supported Platforms
  * All browsers that support HTML5 `<audio>` tags.
  * [Songbird][sb]
  * [SoundManager 2][sm2] (not yet, but planned for version 0.1)
-
-Version 0.0.2 Changes
----------------------
-
- * Created unit tests.
- * Renamed `mumbl.players.AUDIO_TAG` to `mumbl.players.HTML5_AUDIO`.
- * Removed `onExternal*` event handling code from the HTML5 `<audio>` code as it's
-   very unlikely it would ever be fired. The `onExternal*` events still work in Songbird.
- * Now using spaces instead of tabs.
-
-### Bugfixes
- * `mumbl.addTracks` fixed.
- * [Songbird] `mumbl.addTrack` now searches through the `TrackItem` for any non-OGG files so you
-   may now put OGG files at the top of your `TrackItem`s (as long as there are other formats specified).
 
 API
 ---
