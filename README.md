@@ -115,8 +115,12 @@ API
 			<li><code>SOUNDMANAGER2</code></li>
 		</ul>
 	</dd>
-	<li><code>mumbl.player</code> - The player from <code>mumbl.players</code> used to play audio.</li>
-	<li><code>mumbl._interface</code> - The interface to the player being used.</li>
+
+	<dt><code>mumbl.player</code></dt>
+	<dd>The player from <code>mumbl.players</code> used to play audio.</dd>
+
+	<dt><code>mumbl._interface</code></dt>
+	<dd>The interface to the player being used.</dd>
 </dl>
 
 ### Event Handlers
