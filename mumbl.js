@@ -1,6 +1,6 @@
 /*
-* mumbl JavaScript Library v0.0.2
-* Last-modified: 2009-08-12
+* mumbl JavaScript Library v0.0.3
+* 2009-08-25
 * By Elijah Grey, http://eligrey.com
 *
 * See README.md for help
@@ -414,12 +414,9 @@
             player            = audio_elem;
         
             var addEvent, remEvent,
-            notEnded = True, // needed for Google Chrome
             onended_handler = function () {
-                notEnded = False;
                 var item = mumbl[$TRACK$];
                 if (looping) {
-                    notEnded = True;
                     if (looping === 1) {
                         mumbl[$POSITION$](0);
                         return;
@@ -429,7 +426,6 @@
                     }
                 }
                 if (item() < mumbl[$LENGTH$]() - 1) {
-                    notEnded = True;
                     mumbl[$NEXT$]();
                 }
             },
@@ -565,13 +561,6 @@
             
             onvolumechange_handler();
             onplaypause_handler();
-            
-            if (window.chrome) {
-                // http://code.google.com/p/chromium/issues/detail?id=16768
-                addEvent("timeupdate", function () {
-                    (notEnded && player.ended && onended_handler());
-                });
-            }
             player.autoplay = True;
         } /*else if (window.soundManager) {
             // http://www.schillmania.com/projects/soundmanager2/doc/

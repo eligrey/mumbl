@@ -1,8 +1,12 @@
 mumbl Changelog
 ===============
 
-Version 0.0.2
--------------
+0.0.3
+-----
+Chromium [issue 16768](http://code.google.com/p/chromium/issues/detail?id=16768) has been fixed so the workaround code is no longer needed.
+
+0.0.2
+-----
 
  * Created unit tests.
  * Added `mumbl.destruct()` method to remove mumbl and stop audio playback.
