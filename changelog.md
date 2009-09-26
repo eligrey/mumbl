@@ -1,9 +1,26 @@
 mumbl Changelog
 ===============
 
+0.0.4
+-----
+
+ * Added `mumbl.VERSION` string.
+ * Added `mumbl.INTEGRATED` boolean. This represents if there is a native integrated
+   interface being used for the player.
+ * Going back to tabs.
+ * Fixed internal `onplaypause_handler` firing twice and it now correctly fires when a
+   play event happens.
+ * Added some stuff to get ready for adding SM2 support.
+ * No longer defines HTML5 audio and SM2 shared methods if the browser is
+   unsupported.
+ * Internal API naming changes. (`$METHOD_NAME$` is now `$METHOD_NAME`)
+
 0.0.3
 -----
-Chromium [issue 16768](http://code.google.com/p/chromium/issues/detail?id=16768) has been fixed so the workaround code is no longer needed.
+
+ * Chromium [issue 16768](http://code.google.com/p/chromium/issues/detail?id=16768) has
+   been fixed so the workaround code is no longer needed.
+
 
 0.0.2
 -----
@@ -19,7 +36,9 @@ Chromium [issue 16768](http://code.google.com/p/chromium/issues/detail?id=16768)
 
 ### Bugfixes
  * `mumbl.addTracks` fixed.
- * [Songbird] `mumbl.addTrack` now searches through the `TrackItem` for any non-OGG files so you
-   may now put OGG files at the top of your `TrackItem`s (as long as there are other formats specified).
- * [Songbird] `mumbl.play` now checks to see if `songbird.paused` is true before playing (otherwise Songbird used to crash).
+ * [Songbird] `mumbl.addTrack` now searches through the `TrackItem` for any non-OGG files
+   so you may now put OGG files at the top of your `TrackItem`s (as long as there are
+   other formats specified).
+ * [Songbird] `mumbl.play` now checks to see if `songbird.paused` is true before playing
+   (otherwise Songbird used to crash).
 

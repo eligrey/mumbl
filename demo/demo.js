@@ -22,11 +22,12 @@
 	}
 	
 	if (mumbl.player === mumbl.players.SONGBIRD) {
+	// stop Songbird from making it's own playlist out of the links on the page
 		$("#playlist a").attr("href", "#");
 	}
 	
-	if (mumbl.player === mumbl.players.SONGBIRD || mumbl.player === mumbl.players.UNSUPPORTED) {
-		// hide interface for songbird (or if there is no supported player)
+	if (mumbl.INTEGRATED || mumbl.player === mumbl.players.UNSUPPORTED) {
+		// hide interface if there is a native interface or if mumbl is unsupported
 		$("#mumbl-player").hide();
 		return;
 	}

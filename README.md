@@ -1,7 +1,7 @@
 mumbl
 =====
 
-*Version 0.0.3*
+*Version 0.0.4*
 
 **mumbl** is a JavaScript library that makes it easy to play music and create playlists on web pages.
 
@@ -106,6 +106,12 @@ API
 ### Fields
 
 <dl>
+	<dt><code>mumbl.version</code></dt>
+	<dd>
+	  A string representing the version of the mumbl script. The version string is in the
+	  format of <code><em>major</em>.<em>minor</em>.<em>revision</em></code>.
+	</dd>
+
 	<dt><code>mumbl.players</code></dt>
 	<dd>An object populated with constants representing various players:
 		<ul>
@@ -118,6 +124,12 @@ API
 
 	<dt><code>mumbl.player</code></dt>
 	<dd>The player from <code>mumbl.players</code> used to play audio.</dd>
+
+	<dt><code>mumbl.INTEGRATED</code></dt>
+	<dd>
+	  A boolean value that represents if there is a native interface being used for the
+	  player.
+	</dd>
 
 	<dt><code>mumbl._interface</code></dt>
 	<dd>The interface to the player being used.</dd>
