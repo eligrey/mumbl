@@ -1,3 +1,9 @@
+module("mumbl " + mumbl.version);
+
+if (mumbl.player !== mumbl.players.UNSUPPORTED) {
+
+//soundManager.onready(function(){
+
 var playlist = [
     "Cryogenic%20Unrest",
     "Disturbed%20Orbit",
@@ -7,8 +13,6 @@ var playlist = [
 ],
 continueTests;
 playlist.location = "../demo/music/%40F1LT3R%20-%20";
-
-module("mumbl");
 
 test("playlist management", function () {
     expect(5);
@@ -125,4 +129,13 @@ function test4 () { // this test is N/A for Songbird
         
         // TODO: shuffling test
     })
+}
+
+
+//});
+
+} else {
+	test("browser support", function () {
+		ok(false, "Unsupported browser");
+	});
 }
