@@ -101,7 +101,7 @@ function test4 () { // this test is N/A for Songbird
     test("looping and shuffling", function () {
         expect(1);
         stop();
-        var container = document.getElementById("main"),
+        var container = document.body,
         loopingWorks = document.createElement("button"),
         loopingDoesntWork = document.createElement("button");
         loopingWorks.innerHTML = "Looping works";
