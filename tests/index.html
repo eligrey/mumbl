@@ -5,21 +5,48 @@
 <title>mumbl test suite</title>
 <link rel="stylesheet" type="text/css" href="http://github.com/jquery/qunit/raw/master/qunit/qunit.css" title="QUnit" />
 <script type="text/javascript" src="http://github.com/jquery/qunit/raw/master/qunit/qunit.js"></script>
-<!--<script type="text/javascript" src="../sm2/soundmanager2.js"></script>
+<script type="text/javascript">
+if (window.songbird) {
+	var SM2_DEFER = true;
+	soundManager = {};
+}
+</script>
+<script type="text/javascript" src="../sm2/soundmanager2.js"></script>
 <script type="text/javascript">
 soundManager.url = '../sm2/';
-soundManager.wmode = 'transparent';
-soundManager.debugMode = false;
-</script>-->
+soundManager.nullURL = "../sm2/null.mp3";
+soundManager.debugMode = true;
+soundManager.flashVersion = 8;
+soundManager.useHighPerformance = true;
+
+if (/\bdefer-songbird\b/.test(location.hash)) {
+	window.songbird = void 0;
+}
+if (/[?&]defer-html5\b/.test(location.hash)) {
+	HTMLAudioElement.prototype.canPlayType = void 0;
+}
+if (/\bdefer-sm2\b/.test(location.hash)) {
+	soundManager = void 0;
+}
+</script>
 <script type="text/javascript" src="../mumbl.js"></script>
 </head>
 <body>
 <h1 id="qunit-header">mumbl test suite</h1>
 <h2 id="qunit-banner"></h2>
-<div id="qunit-testrunner-toolbar"></div>
+<div id="qunit-testrunner-toolbar">
+<p>Be sure to run these tests on your local dev server so the audio files load faster.</p>
+</div>
 <h2 id="qunit-userAgent"></h2>
 <ol id="qunit-tests"></ol>
 <div id="qunit-main"></div>
 <script type="text/javascript" src="tests.js"></script>
+<div id="question-box"></div>
+<pre id="soundmanager-debug"></pre>
+<script type="text/javascript">
+if (/\bdebug\b/.test(location.hash)) {
+	document.documentElement.appendChild(document.createElement('script')).src='http://www.billyreisinger.com/jash/source/latest/Jash.js';
+}
+</script>
 </body>
 </html>

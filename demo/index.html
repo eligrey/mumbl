@@ -41,11 +41,14 @@
 	overflow: hidden;
 }
 </style>
-<!--<script type="text/javascript" src="http://www.schillmania.com/projects/soundmanager2/script/soundmanager2-nodebug-jsmin.js"></script>
+<script type="text/javascript" src="../sm2/soundmanager2-nodebug-jsmin.js"></script>
 <script type="text/javascript">
-soundManager.url       = "path/to/soundmanager2/";
+soundManager.url = '../sm2/';
+soundManager.nullURL = "../sm2/null.mp3";
 soundManager.debugMode = false;
-</script>-->
+soundManager.flashVersion = 8;
+soundManager.useHighPerformance = true;
+</script>
 <script type="text/javascript" src="../mumbl.js"></script>
 <script type="text/javascript">
 if (location.search === "?debug") {

@@ -1,7 +1,8 @@
 /*jslint browser: true */
 
-(function ($) {
-	var window = this,
+var init = (function () {
+	var $ = jQuery,
+	window = this,
 	playlist = [
 		"Cryogenic Unrest",
 		"SOS Distress",
@@ -203,8 +204,14 @@
 		duration = mumbl.duration();
 		trackDuration.text(toMinsSecs(duration));
 	};
-}.call(this, jQuery));
+	
+	mumbl.volume(1);
+	mumbl.track(0);
+	mumbl.pause();
+});
 
-mumbl.volume(1);
-mumbl.track(0);
-mumbl.pause();
+if (mumbl.player === mumbl.players.SOUNDMANAGER2) {
+	soundManager.onready(init, window);
+} else {
+	init.call(window);
+}
