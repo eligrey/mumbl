@@ -1,6 +1,14 @@
 mumbl Changelog
 ===============
 
+0.1a2
+-----
+
+ * Threw out the old events system in favor of a event listener subscription system.
+   Now use `mumbl.listen(event, handler)` and `mumbl.unlisten(event, handler)`.
+ * Added `mumbl.onready(callback [, scope])` which calls `callback()` right away
+   unless the player being used is SoundManager2, in which case t
+
 0.1a1
 -----
 

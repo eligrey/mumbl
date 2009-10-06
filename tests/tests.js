@@ -2,8 +2,13 @@ var isSB = mumbl.player === mumbl.players.SONGBIRD;
 
 if (mumbl.player !== mumbl.players.UNSUPPORTED) {
 
-function tests () {
-
+mumbl.onready(function () {
+var _continue = function () {
+	start();
+	mumbl.unlisten("trackload", _continue);
+	mumbl.unlisten("canplaythroughtrack", _continue);
+	
+};
 if (mumbl.player === mumbl.players.SOUNDMANAGER2) {
 	start(); // no idea why this is needed
 	// TODO: figure out why I have to start() when using SM2
@@ -32,14 +37,13 @@ test("core", function () {
 	ok(pass, desc + missing.join(", "));
 });
 
-test("playlist management", function () {
-	stop();
+asyncTest("playlist management", function () {
 	expect(8);
 	
 	equals( mumbl.length(), 0, "mumbl.length" );
 	
 	mumbl.addTrack( // add a single track
-		playlist.location + playlist[0] + ".ogg", "audio/ogg",
+		playlist.location + playlist[0] + ".ogg", "audio/ogg; codecs=vorbis",
 		playlist.location + playlist[0] + ".mp3", "audio/mpeg"
 	);
 	
@@ -52,7 +56,7 @@ test("playlist management", function () {
 	var TrackItemList = [];
 	for (var i = 1; i < playlist.length; i++) {
 		TrackItemList.push([
-			playlist.location + playlist[i] + ".ogg", "audio/ogg",
+			playlist.location + playlist[i] + ".ogg", "audio/ogg; codecs=vorbis",
 			playlist.location + playlist[i] + ".mp3", "audio/mpeg"
 		]);
 	}
@@ -78,30 +82,7 @@ test("playlist management", function () {
 	}, 100);
 });
 
-test("shuffle", function () {
-	expect(isSB ? 2 : 4);
-
-	var trackIndex = mumbl.track(),
-	currentTrack = mumbl.tracks()[trackIndex][0];
-	mumbl.shuffle(true);
-
-	if (!isSB) {
-		equals( mumbl.shuffle(), true, "shuffle on" );
-	}
-	equals( mumbl.tracks()[0][0], currentTrack, "current track as first" );
-
-	mumbl.shuffle(false);
-	if (!isSB) {
-		equals( mumbl.shuffle(), false, "shuffle off" );
-	}
-	equals( mumbl.track(), trackIndex, "original playlist restoration" );
-
-	mumbl.onCanPlayThroughTrack = start;
-	mumbl.track(0);
-});
-
-test("playing music", function () {
-	mumbl.onCanPlayThroughTrack = null;
+asyncTest("playing music", function () {
 	expect(isSB ? 11 : 13);
 	
 	mumbl.play();
@@ -133,18 +114,35 @@ test("playing music", function () {
 		mumbl.volume(1);
 	}
 	
-	stop();
 	
-	
-	mumbl.onTrackLoad = start;
+	mumbl.listen("trackload", _continue);
 	mumbl.track(0);
 });
 
 if (!isSB) {
-test("looping", function () {
-	mumbl.onTrackLoad = null;
+asyncTest("shuffle", function () {
+	expect(isSB ? 2 : 4);
+
+	var trackIndex = mumbl.track(),
+	currentTrack = mumbl.tracks()[trackIndex][0];
+	mumbl.shuffle(true);
+
+	if (!isSB) {
+		equals( mumbl.shuffle(), true, "shuffle on" );
+	}
+	equals( mumbl.tracks()[0][0], currentTrack, "current track as first" );
+
+	mumbl.shuffle(false);
+	if (!isSB) {
+		equals( mumbl.shuffle(), false, "shuffle off" );
+	}
+	equals( mumbl.track(), trackIndex, "original playlist restoration" );
+
+	mumbl.listen("canplaythroughtrack", _continue);
+	mumbl.track(0);
+});
+asyncTest("looping", function () {
 	expect(2);
-	stop();
 	var container = document.getElementById("question-box"),
 	loopingWorks = document.createElement("button"),
 	loopingDoesntWork = document.createElement("button");
@@ -173,14 +171,12 @@ test("looping", function () {
 })
 }
 
-test("duration and position", function () {
-	mumbl.onCanPlayThroughTrack = null;
+asyncTest("duration and position", function () {
 	expect(2 - isSB);
 	if (!isSB) {
 		mumbl.position(10);
-		stop();
 		setTimeout(function () { // currentTime takes a moment to update in Firefox
-			equals( Math.floor(mumbl.position()), 10, "mumbl.position (it's ok if this fails sometimes)" );
+			equals( Math.floor(mumbl.position()), 10, "mumbl.position (if this fails reload the test suite and try once more, slowly)" );
 			start();
 		}, 100);
 	}
@@ -199,13 +195,8 @@ test("destruct", function () {
 	equals(typeof window.mumbl, "undefined", "mumbl.destruct");
 });
 
-}
+}, window)
 
-if (!isSB) {
-	soundManager.onready(tests, window);
-} else {
-	window.onload = tests;
-}
 
 } else {
 	test("player support", function () {

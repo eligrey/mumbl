@@ -1,6 +1,6 @@
 /*
- * mumbl JavaScript Library v0.1a1
- * 2009-10-04
+ * mumbl JavaScript Library v0.1a2
+ * 2009-10-05
  * By Elijah Grey, http://eligrey.com
  *
  * See README.md for help
@@ -9,18 +9,19 @@
  *   See COPYING.md
  */
 
-/*global self, setTimeout*/
+/*global self, setTimeout */
 
-/*jslint white: true, nomen: true, eqeqeq: true, strict: true, immed: true, maxerr: 1000 */
+/*jslint white: true, undef: true, nomen: true, eqeqeq: true, bitwise: true, regexp: true,
+  strict: true, newcap: true, immed: true, maxerr: 1000, maxlen: 90 */
 
 // Ignore all of JSLint's "Expected an assignment or function call and instead
-// saw an expression" errors as they code is perfectly valid.
+// saw an expression" errors as the code is perfectly valid.
 
 /* Relevant Player Bugs
  *
  * Songbird:
  *  - [FIXED] http://bugzilla.songbirdnest.com/show_bug.cgi?id=17577
- *      songbird[$play]() crashes Songbird if unless playing and paused
+ *      songbird.play() crashes Songbird unless playing and paused
  *  - http://bugzilla.songbirdnest.com/show_bug.cgi?id=17580
  *      songbird.playURL doesn't display artist/track name/etc.
  *  - http://bugzilla.songbirdnest.com/show_bug.cgi?id=17578
@@ -31,14 +32,14 @@
  *      Ogg-in-Flac files do not show track duration time
  *
  * Chromium / Google Chrome:
- *  - http://code.google.com/p/chromium/issues/detail?id=16768
+ *  - [FIXED] http://code.google.com/p/chromium/issues/detail?id=16768
  *      layout test fails because "ended" event is not triggered when video plays to end
  */
 
 "use strict";
 
 self.mumbl || (self.mumbl = (function (window) {
-	var // API syntax: $property_name = "propertyName"
+	var
 	
 	// Fields:
 	$player            = "player",
@@ -73,27 +74,7 @@ self.mumbl || (self.mumbl = (function (window) {
 	
 	players            = 4,
 	
-	mumbl              = {
-		version: "0.1a1",
-		player: 0,
-		players: {
-			UNSUPPORTED   : 0,
-			HTML5_AUDIO   : 1,
-			SONGBIRD      : 2,
-			SOUNDMANAGER2 : 3,
-			addPlayer     : function (playerName) { // use this to add custom players
-				playerName = playerName.toUpperCase();
-				if (!(playerName in this)) {
-					this[playerName] = players++;
-				}
-			}
-		},
-		INTEGRATED: False,
-		destruct: function () {
-			mumbl[$clear]();
-			delete window.mumbl;
-		}
-	},
+	events             = {},
 	
 	loc                = window.location,
 	doc                = window.document,
@@ -110,20 +91,94 @@ self.mumbl || (self.mumbl = (function (window) {
 	paused             = True,
 	shuffle            = False,
 	
+	add_evt_listener = "addEventListener",
+	
 	realPlaylist,
 	realTrackIndex,
 	playlist,
 	player,
 	
-	add_evt_listener = "addEventListener",
+	arrayIndexOf = Array.prototype.indexOf || function (elt) {
+		var len = this[$length],
+			i   = 0;
+
+		for (; i < len; i++) {
+			if (i in this && this[i] === elt) {
+				return i;
+			}
+		}
+	
+		return -1;
+	},
+	
+	mumbl  = {
+		version: "0.1a2",
+		player: 0,
+		players: {
+			UNSUPPORTED   : 0,
+			HTML5_AUDIO   : 1,
+			SONGBIRD      : 2,
+			SOUNDMANAGER2 : 3,
+			addPlayer     : function (playerName) { // use this to add custom players
+				playerName = playerName.toUpperCase();
+				if (!(playerName in this)) {
+					this[playerName] = players++;
+				}
+				return this[playerName];
+			}
+		},
+		listen: function (event, handler) {
+			typeof handler === "function" &&
+				events[event].unshift(handler);
+		},
+		unlisten: function (event, handler) {
+			event = events[event];
+			handler = arrayIndexOf.call(event, handler);
+			if (handler !== -1) {
+				event.splice(handler, 1);
+			}
+		},
+		destruct: function () {
+			mumbl[$clear]();
+			delete window.mumbl;
+		},
+		onready: function (callback, scope) {
+			if (mumbl.player !== 3) { // !== mumbl.players.SOUNDMANAGER2
+				callback.call(scope);
+			} else {
+				player.onready(callback, scope);
+			}
+		},
+		INTEGRATED: False
+	},
 	
 	isNan = isNaN,
+	
+	throwException = function (ex) {
+		setTimeout(function () {
+			throw ex;
+		}, 0);
+	},
+	
+	dispatchEvent = function (event) {
+		event = events[event];
+		var i = event[$length];
+		if (i) {
+			while (i--) {
+				try {
+					event[i].call(mumbl);
+				} catch (ex) {
+					throwException(ex);
+				}
+			}
+		}
+	},
 	
 	shuffled = function (arr) {
 		arr = arr.slice(0);
 		var randI,
 		original,
-		i = arr.length;
+		i = arr[$length];
 		while (--i) {
 			randI = Math.floor(Math.random() * i);
 			original = arr[i];
@@ -152,33 +207,30 @@ self.mumbl || (self.mumbl = (function (window) {
 		return Array.prototype.slice.call(obj);
 	},
 	
-	createEventHandler = function (prop) {
+	createEventHandler = function (event) {
+		events[event] = [];
 		return function () {
-			if (typeof mumbl[prop] === "function") {
-				mumbl[prop]();
-			}
+			dispatchEvent(event);
 		};
 	},
 	
 	// Event methods:
 	
-	$onTrack    = "onTrack",
-	$onCanPlay  = "onCanPlay",
-	$onExternal = "onExternal",
+	$canplay  = "canplay",
+	$external = "external",
 	
-	onTrackChange             = createEventHandler($onTrack + "Change"),
-	onTrackReady              = createEventHandler($onTrack + "Ready"),
-	onTrackLoad               = createEventHandler($onTrack + "Load"),
-	onCanPlayTrack            = createEventHandler($onCanPlay + "Track"),
-	onCanPlayThroughTrack     = createEventHandler($onCanPlay + "ThroughTrack"),
-	onExternalPlayStateChange = createEventHandler($onExternal + "PlayStateChange"),
-	onExternalVolumeChange    = createEventHandler($onExternal + "VolumeChange"),
-	onExternalMuteChange      = createEventHandler($onExternal + "MuteChange"),
-	onExternalLoopingChange   = createEventHandler($onExternal + "LoopingChange"),
-	onExternalShufflingChange = createEventHandler($onExternal + "ShufflingChange"),
+	onTrackChange             = createEventHandler($track + "change"),
+	onTrackReady              = createEventHandler($track + "ready"),
+	onTrackLoad               = createEventHandler($track + "load"),
+	onCanPlayTrack            = createEventHandler($canplay + "track"),
+	onCanPlayThroughTrack     = createEventHandler($canplay + "throughtrack"),
+	onExternalPlayStateChange = createEventHandler($external + "playstatechange"),
+	onExternalVolumeChange    = createEventHandler($external + "volumechange"),
+	onExternalMuteChange      = createEventHandler($external + "mutechange"),
+	onExternalLoopingChange   = createEventHandler($external + "loopingchange"),
+	onExternalShufflingChange = createEventHandler($external + "shufflingchange"),
 	
-	
-	all_track_handlers    = function () {
+	all_track_handlers = function () {
 		onTrackChange();
 		onTrackReady();
 		onCanPlayTrack();
@@ -186,14 +238,6 @@ self.mumbl || (self.mumbl = (function (window) {
 		onTrackLoad();
 	};
 	
-	mumbl[$play] = function () {
-		player[$play]();
-		(paused = stopped = False);
-	};
-	mumbl[$pause] = function () {
-		player[$pause]();
-		paused = !(stopped = False);
-	};
 	mumbl[$playing] = function () {
 		return !stopped;
 	};
@@ -274,7 +318,8 @@ self.mumbl || (self.mumbl = (function (window) {
 				observe: handler
 			});
 		},
-		absoluteURI          = function (uri) { // convert relative URIs to absolute for Songbird
+		// convert relative URIs to absolute for Songbird
+		absoluteURI          = function (uri) {
 			var protocol = loc.protocol + "//";
 			uri = uri.replace(/^\/\//, protocol); // handle "//example.com"
 			if (/^[\w\-]+:/.test(uri)) {
@@ -434,9 +479,6 @@ self.mumbl || (self.mumbl = (function (window) {
 				player.position = 1 + (seconds * 1000); // convert seconds to milliseconds
 			}
 		};
-		mumbl[$stopped] = function () {
-			return stopped;
-		};
 		mumbl.destruct = function () {
 			window.removeEventListener("trackchange", ontrackchange_handler, False);
 			mumbl[$clear]();
@@ -466,8 +508,9 @@ self.mumbl || (self.mumbl = (function (window) {
 			notSettingShuffle && onExternalShufflingChange();
 		});
 		
-		// undocumented "trackchange" event
-		// http://src.songbirdnest.com/source/xref/client/components/remoteapi/src/sbRemotePlayer.cpp#219
+		// undocumented "trackchange" event:
+		// http://src.songbirdnest.com/source/xref/client/components/remoteapi/src/
+		// sbRemotePlayer.cpp#219
 		window[add_evt_listener]("trackchange", ontrackchange_handler, False);
 		
 		window[add_evt_listener]("unload", mumbl.destruct, False);
@@ -525,6 +568,15 @@ self.mumbl || (self.mumbl = (function (window) {
 		mumbl[$player]    = 1; // mumbl.players.HTML5_AUDIO
 		mumbl[$interface] = player;
 		
+		
+		mumbl[$play] = function () {
+			player[$play]();
+			(paused = stopped = False);
+		};
+		mumbl[$pause] = function () {
+			player[$pause]();
+			paused = !(stopped = False);
+		};
 		mumbl[$stop] = function () {
 			stopped = True;
 			duration = 0;
@@ -601,7 +653,8 @@ self.mumbl || (self.mumbl = (function (window) {
 				return player.currentTime;
 			} else if (!stopped) {
 				if (seconds < 1) {
-					seconds = (seconds < 0 ? 0 : seconds) + 0.01022; // fix negative position
+					// fix negative position
+					seconds = (seconds < 0 ? 0 : seconds) + 0.01022;
 				}
 				try {
 					player.currentTime = seconds;
@@ -620,12 +673,6 @@ self.mumbl || (self.mumbl = (function (window) {
 			}
 			volume = player.volume = vol;
 		};
-		mumbl[$playing] = function () {
-			return !paused;
-		};
-		mumbl[$stopped] = function () {
-			return stopped;
-		};
 		
 		doc.documentElement.appendChild(player);
 		addEvent("play", onplaypause_handler);
@@ -640,8 +687,8 @@ self.mumbl || (self.mumbl = (function (window) {
 		addEvent("ended", onEnded);
 		
 		onplaypause_handler();
-		player.autoplay = True;
-		return True;
+		
+		return (player.autoplay = True);
 	}())) || (window.soundManager && (function () {
 		// http://www.schillmania.com/projects/soundmanager2/doc/
 		player   = window.soundManager;
@@ -651,31 +698,33 @@ self.mumbl || (self.mumbl = (function (window) {
 		player.allowPolling = True;
 		
 		var sounds     = player.sounds,
-		position       = 0,
 		mumblNS        = "mumbl:",
 		Null           = null,
 		currentTrackId,
-		// matches MP3, AAC, Speex, and ADPCM media types
-		flashCanPlay = /^audio\/(?:x-)?(?:mp(?:eg|3)|mp4a-latm|aac|speex|(?:32k)?adpcm);?/i,
+		// matches MP3, AAC (not AACP), Speex, and ADPCM media types
+		// http://en.wikipedia.org/wiki/Flash_Video#Codec_support
+		flashCodec = /^audio\/(?:x-)?(?:mp(?:eg|3)|mp4a-latm|aac|speex|(?:32k)?adpcm);?/i,
 		getCurrentTrack = function () {
 			return sounds[currentTrackId];
 		},
-		loadSound = function (id) {
-			var sound = sounds[id];
+		loadSound = function (sound) {
 			if (sound.readyState === 3) {
 				all_track_handlers();
 			} else {
 				sound.load();
 			}
 		},
-		loadReadyCheck = function () {
-			if (getCurrentTrack().bytesLoaded > 500) {
-				getCurrentTrack().options.whileloading = Null;
+		// TODO: calculate HAS_ENOUGH_DATA with whileloading
+		//canPlayThroughCheck = function () {
+		//},
+		canPlayCheck = function () {
+			var track = getCurrentTrack();
+			if (track.duration > track.position) {
+				//(track.options.whileloading = canPlayThroughCheck)();
+				track.options.whileloading = Null;
 				onTrackReady();
+				onCanPlayTrack();
 			}
-		},
-		updatePosition = function () {
-			position = getCurrentTrack().position / 1000 || 0;
 		},
 		SM2Sound = function (uri) {
 			var opts = this;
@@ -684,15 +733,15 @@ self.mumbl || (self.mumbl = (function (window) {
 			// for some reason, SM2 disregards inherited methods,
 			// so explicitly define them here
 			opts.onload       = all_track_handlers;
-			opts.whileloading = loadReadyCheck;
-			opts.whileplaying = updatePosition;
+			opts.whileloading = canPlayCheck;
+			opts.onid3        = onTrackReady;
 			opts.onfinish     = onEnded;
 		};
 		SM2Sound.prototype = { // set every setting as not to inherit changed defaults
 			autoLoad              : False,
 			stream                : True,
+			whileplaying          : Null,
 			autoPlay              : False,
-			onid3                 : Null,
 			onplay                : Null,
 			onpause               : Null,
 			onresume              : Null,
@@ -739,10 +788,9 @@ self.mumbl || (self.mumbl = (function (window) {
 		};
 		mumbl[$position] = function (seconds) {
 			if (isNan(seconds)) {
-				return position;
+				return getCurrentTrack().position / 1000 || 0;
 			}
 			getCurrentTrack().setPosition(seconds * 1000);
-			position = seconds;
 			if (!stopped && !paused) {
 				getCurrentTrack()[$play]();
 			}
@@ -758,13 +806,17 @@ self.mumbl || (self.mumbl = (function (window) {
 				return trackIndex;
 			}
 			if (playlistLen > 0) {
-				var track = playlist[index];
-				currentTrackId && getCurrentTrack()[$stop]();
-				loadSound(track);
-				!paused && sounds[track] &&
-					sounds[track][$play]();
-				currentTrackId = playlist[trackIndex = index];
-				onTrackChange();
+				var track = playlist[index],
+				    sound = sounds[track];
+				if (sound) {
+					currentTrackId && getCurrentTrack()[$stop]();
+					sound.whileloading = canPlayCheck;
+					loadSound(sound);
+					!paused &&
+						sound[$play]();
+					currentTrackId = playlist[trackIndex = index];
+					onTrackChange();
+				}
 			}
 		};
 		mumbl[$tracks] = function () {
@@ -795,7 +847,7 @@ self.mumbl || (self.mumbl = (function (window) {
 					file = args.slice(i, i + 2);
 					// file[0] = file URI
 					// file[1] = file media type
-					if (flashCanPlay.test(file[1])) {
+					if (flashCodec.test(file[1])) {
 						uri = file[0];
 						break;
 					}

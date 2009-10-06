@@ -1,6 +1,6 @@
 /*jslint browser: true */
 
-var init = (function () {
+mumbl.onready(function () {
 	var $ = jQuery,
 	window = this,
 	playlist = [
@@ -17,7 +17,7 @@ var init = (function () {
     
 	for (var i = 0; i < playlist.length; i++) {
 		mumbl.addTrack(
-			playlist.location + encodeURIComponent(playlist[i]) + ".ogg", "audio/ogg",
+			playlist.location + encodeURIComponent(playlist[i]) + ".ogg", "audio/ogg; codecs=vorbis",
 			playlist.location + encodeURIComponent(playlist[i]) + ".mp3", "audio/mpeg"
 		);
 	}
@@ -196,22 +196,16 @@ var init = (function () {
 		trackPosition.text(toMinsSecs(mumbl.position()));
 	}, 500);
 	
-	mumbl.onTrackChange = function() {
+	mumbl.listen("trackchange", function() {
 		trackTitle.text(playlist[mumbl.track()] + " - " + playlist.album + " - " + playlist.artist);
-	};
+	});
 	
-	mumbl.onTrackReady = function() {
+	mumbl.listen("trackready", function() {
 		duration = mumbl.duration();
 		trackDuration.text(toMinsSecs(duration));
-	};
+	});
 	
 	mumbl.volume(1);
 	mumbl.track(0);
 	mumbl.pause();
-});
-
-if (mumbl.player === mumbl.players.SOUNDMANAGER2) {
-	soundManager.onready(init, window);
-} else {
-	init.call(window);
-}
+}, window);
