@@ -1,7 +1,7 @@
 mumbl
 =====
 
-*Version 0.1a2*
+*Version 0.1a3*
 
 **mumbl** is a JavaScript library that makes it easy to play music and create playlists
 on web pages.
@@ -60,7 +60,7 @@ API
 
 <dl>
   <dt><code>mumbl.addTrack(TrackItem):void</code></dt>
-  <dd>Adds <code>TrackItem</code> to the playlist.</dd>
+  <dd>Adds <code>TrackItem</code>* to the playlist.</dd>
 
   <dt><code>mumbl.addTracks(TrackItemList):void</code></dt>
   <dd>
@@ -157,15 +157,12 @@ API
   <dd>
     If <code>shuffleState</code> is not boolean, the shuffle state of the playlist
     is returned.
-  </dd>
-  <dd>
-    If <code>shuffleState</code> is <code>true</code>, random items from the
-    playlist are played until every item has been played. Any changes to the playlist
-    will not persist once reverted back to the original playlist. By using
-    <code>mumbl.shuffle(false)</code>.
     <br />
-    If <code>shuffleState</code> is <code>false</code>, the playlist is played in
-    the order it was created.
+    If <code>shuffleState</code> is <code>true</code>, the playlist is played in a random
+    order.
+    <br />
+    If <code>shuffleState</code> is <code>false</code>, the playlist is played in the
+    order that it was defined.
   </dd>
 
   <dt><code>mumbl.stop():void</code></dt>
@@ -260,46 +257,54 @@ with a native interface for a player (like Songbird).
   
   <dt><code>trackready</code></dt>
   <dd>
-    This is dispatched after when the metadata for the selected track (including
-    the duration) is accessible.
+    This is dispatched as soon as it is possible to start playing a track.
   </dd>
   
-  <dt><code>canplaytrack</code></dt>
+  <dt><code>position</code></dt>
+  <dd>
+    This is dispatched when <code>mumbl.position()</code> changes.
+  </dd>
+  
+  <dt><code>duration</code></dt>
+  <dd>
+    This is dispatched when <code>mumbl.duration()</code> changes.
+  </dd>
+  
+  <dt><code>canplay</code></dt>
   <dd>
     This is dispatched when enough data from the currently selected track is loaded
     that it can play.
   </dd>
   
-  <dt><code>canplaythroughtrack</code></dt>
+  <dt><code>canplaythrough</code></dt>
   <dd>
     This is dispatched when the rate at which the data from the selected track is
     loading fast enough to play through the whole track.
   </dd>
   
-  <dt><code>trackload</code></dt>
+  <dt><code>load</code></dt>
   <dd>
     This is dispatched when all of the data for the selected track has been loaded.
   </dd>
   
-  <dt><code>externalplaystatechange</code></dt>
+  <dt><code>externalplaystate</code></dt>
   <dd>This is dispatched when the playing state of the player is changed externally.</dd>
   
-  <dt><code>externalvolumechange</code></dt>
+  <dt><code>externalvolume</code></dt>
   <dd>This is dispatched when the volume of the player is changed externally.</dd>
   
-  <dt><code>externalmutechange</code></dt>
+  <dt><code>externalmute</code></dt>
   <dd>This is dispatched when the player is muted or unmuted externally.</dd>
   
-  <dt><code>externalloopingchange</code></dt>
+  <dt><code>externallooping</code></dt>
   <dd>This is dispatched when the player's looping state is externally changed.</dd>
   
-  <dt><code>externalshufflingchange</code></dt>
+  <dt><code>externalshuffling</code></dt>
   <dd>This is dispatched when the player's shuffling state is externally changed.</dd>
 </dl>
 
-Note: The `ready` event cannot be subscribed to with `mumbl.listen()`. The
-`mumbl.onready()` event listener method should be used instead to subscribe to the
-`ready` event.
+Note: There is no `ready` event which can be subscribed to with `mumbl.listen()`. The
+`mumbl.onready()` subscription method should be used instead.
 
 -----
 
@@ -326,6 +331,9 @@ file, just pass `null` in place of the media type.
 Roadmap
 -------
 
+ * 0.1.1
+   * Better error handling.
+   * A `loaderror` event.
  * A while after version 0.1 is released
    * Create a simple library that makes all MP3, OGG, WAV, etc. links be able to
      be played using mumbl.
@@ -333,7 +341,8 @@ Roadmap
      portable and reusable.
      * Remove jQuery dependancy from mumblr.
      * Add a shuffle button to mumblr.
-     * Make the track title display scroll (maybe using a `<marquee>`) when it overflows.
+     * Maybe make the track title display scroll (maybe using a `<marquee>`) when
+       it overflows.
  * Version 0.2
    * Full compatability with every major browser.
  * The distant future

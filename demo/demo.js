@@ -1,5 +1,7 @@
 /*jslint browser: true */
 
+// XXX: make a portable library out of this mess
+
 mumbl.onready(function () {
 	var $ = jQuery,
 	window = this,
@@ -30,6 +32,9 @@ mumbl.onready(function () {
 	if (mumbl.INTEGRATED || mumbl.player === mumbl.players.UNSUPPORTED) {
 		// hide interface if there is a native interface or if mumbl is unsupported
 		$("#mumbl-player").hide();
+		if (mumbl.INTEGRATED) {
+			mumbl.track(0);
+		}
 		return;
 	}
 
@@ -48,6 +53,7 @@ mumbl.onready(function () {
 	volBtn         = $("#mumbl-volume"),
 	playBtn        = $("#mumbl-play-pause"),
 	loopBtn        = $("#mumbl-loop"),
+	shuffleBtn     = $("#mumbl-shuffle"),
 	progress       = $("#mumbl-progress").progressbar(),
 	trackPosition  = $("#mumbl-track-position"),
 	trackDuration  = $("#mumbl-track-duration"),
@@ -178,34 +184,55 @@ mumbl.onready(function () {
 		changeLoopIcon(looping);
 	}
 	
+	function changeShuffleIcon(state) {
+		if (state) {
+			shuffleBtn
+				.removeClass(iconClass + "arrow-1-e")
+				.addClass(iconClass + "shuffle")
+				.attr("title", "Shuffle Off");
+			return;
+		} else {
+			shuffleBtn
+				.removeClass(iconClass + "shuffle")
+				.addClass(iconClass + "arrow-1-e")
+				.attr("title", "Shuffle On");
+			return;
+		}
+	}
+	
+	function shuffleBtnClick () {
+		draggingPlayer = false;
+		var shuffling = !mumbl.shuffle();
+		mumbl.shuffle(shuffling);
+		changeShuffleIcon(shuffling);
+	}
+	
 	$("#mumbl-next").click(nextBtnClick);
 	$("#mumbl-prev").click(prevBtnClick);
 	volBtn.click(volBtnClick);
 	loopBtn.click(loadBtnClick);
 	playBtn.click(playBtnClick);
-
-	setInterval(function() { // update track progress bar
-		var position = mumbl.position();
-		if (position !== lastPosition) {
-			progress.progressbar("value", (position / duration * 100) || 0);
-			lastPosition = position;
-		}
-	}, 60);
-
-	setInterval(function() { // update position time less frequently
-		trackPosition.text(toMinsSecs(mumbl.position()));
-	}, 500);
+	shuffleBtn.click(shuffleBtnClick);
 	
-	mumbl.listen("trackchange", function() {
-		trackTitle.text(playlist[mumbl.track()] + " - " + playlist.album + " - " + playlist.artist);
-	});
+	if (!mumbl.INTEGRATED) { // don't listen for this info if there's already a UI
+		mumbl.listen("position", function() {
+			var position = mumbl.position();
+			if (position !== lastPosition) {
+				progress.progressbar("value", (position / duration * 100) || 0);
+				lastPosition = position;
+			}
+			trackPosition.text(toMinsSecs(mumbl.position()));
+		});
 	
-	mumbl.listen("trackready", function() {
-		duration = mumbl.duration();
-		trackDuration.text(toMinsSecs(duration));
-	});
+		mumbl.listen("duration", function() {
+			duration = mumbl.duration();
+			trackDuration.text(toMinsSecs(duration));
+		});
 	
-	mumbl.volume(1);
+		mumbl.listen("track", function() {
+			trackTitle.text(playlist[mumbl.track()] + " - " + playlist.album + " - " + playlist.artist);
+		});
+	}
+	
 	mumbl.track(0);
-	mumbl.pause();
 }, window);

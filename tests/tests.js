@@ -5,8 +5,9 @@ if (mumbl.player !== mumbl.players.UNSUPPORTED) {
 mumbl.onready(function () {
 var _continue = function () {
 	start();
-	mumbl.unlisten("trackload", _continue);
-	mumbl.unlisten("canplaythroughtrack", _continue);
+	mumbl.unlisten("canplay", _continue);
+	mumbl.unlisten("load", _continue);
+	mumbl.unlisten("canplaythrough", _continue);
 	
 };
 if (mumbl.player === mumbl.players.SOUNDMANAGER2) {
@@ -83,7 +84,7 @@ asyncTest("playlist management", function () {
 });
 
 asyncTest("playing music", function () {
-	expect(isSB ? 11 : 13);
+	expect(isSB ? 11 : 14);
 	
 	mumbl.play();
 	
@@ -111,34 +112,32 @@ asyncTest("playing music", function () {
 		mumbl.volume(0.5);
 	
 		equals( mumbl.volume(), 0.5, "mumbl.volume(0.5)" );
-		mumbl.volume(1);
+		
+		
+		mumbl.volume(0.8);
+		mumbl.next();
+		setTimeout(function () {
+			equals( Math.floor(mumbl.volume() * 10), 8, "volume persistance" );
+			start();
+			mumbl.volume(1);
+		}, 100);
+	} else {
+		mumbl.listen("canplay", _continue);
+		mumbl.track(0);
 	}
-	
-	
-	mumbl.listen("trackload", _continue);
-	mumbl.track(0);
 });
 
 if (!isSB) {
 asyncTest("shuffle", function () {
-	expect(isSB ? 2 : 4);
+	expect(2);
 
-	var trackIndex = mumbl.track(),
-	currentTrack = mumbl.tracks()[trackIndex][0];
 	mumbl.shuffle(true);
-
-	if (!isSB) {
-		equals( mumbl.shuffle(), true, "shuffle on" );
-	}
-	equals( mumbl.tracks()[0][0], currentTrack, "current track as first" );
+	equals( mumbl.shuffle(), true, "shuffle on" );
 
 	mumbl.shuffle(false);
-	if (!isSB) {
-		equals( mumbl.shuffle(), false, "shuffle off" );
-	}
-	equals( mumbl.track(), trackIndex, "original playlist restoration" );
+	equals( mumbl.shuffle(), false, "shuffle off" );
 
-	mumbl.listen("canplaythroughtrack", _continue);
+	mumbl.listen("load", _continue);
 	mumbl.track(0);
 });
 asyncTest("looping", function () {
@@ -163,8 +162,8 @@ asyncTest("looping", function () {
 	container.appendChild(loopingWorks);
 	container.appendChild(loopingDoesntWork);
 	
-	mumbl.position(155);
 	mumbl.play();
+	mumbl.position(155);
 	mumbl.loop(1);
 	
 	equals( mumbl.loop(), 1, "mumbl.loop" );
@@ -176,7 +175,8 @@ asyncTest("duration and position", function () {
 	if (!isSB) {
 		mumbl.position(10);
 		setTimeout(function () { // currentTime takes a moment to update in Firefox
-			equals( Math.floor(mumbl.position()), 10, "mumbl.position (if this fails reload the test suite and try once more, slowly)" );
+			var pos = Math.floor(mumbl.position());
+			ok( pos > 8 && pos < 12, "mumbl.position (if this fails reload the test suite and try once more, slowly)" );
 			start();
 		}, 100);
 	}

@@ -6,7 +6,7 @@
 <link rel="stylesheet" href="css/ui-lightness/jquery-ui-1.7.2.custom.css"/>
 <style type="text/css">
 #mumbl-player {
-	width: 455px;
+	width: 471px;
 	float: left;
 	overflow: hidden;
 	margin: 0 100% 5px 0;
@@ -64,6 +64,7 @@ if (location.search === "?debug") {
   <div id="mumbl-progress">
     <span id="mumbl-play-pause" class="left control ui-icon ui-icon ui-icon-play" title="Play"></span>
     <span id="mumbl-loop" class="right control ui-icon ui-icon-radio-off" title="Looping Playlist"></span>
+    <span id="mumbl-shuffle" class="right control ui-icon ui-icon-arrow-1-e" title="Shuffle Off"></span>
     <span id="mumbl-volume" class="right control ui-icon ui-icon-volume-on" title="Mute: Off"></span>
     <span id="mumbl-track-title"></span>
     <span class="right">
@@ -76,13 +77,13 @@ if (location.search === "?debug") {
   </div>
 </div>
 <h2>Playlist</h2>
-<p>The music is by <a href="http://hyper-metrix.com/">@F1LT3R</a> (<a href="http://twitter.com/F1LT3R">Twitter page</a>).</p>
+<p>The music is by <a href="http://hyper-metrix.com/">F1LT3R</a>.</p>
 <ol id="playlist">
-  <li onclick="mumbl.track(0);return false"><a href="music/%40F1LT3R%20-%20Cryogenic%20Unrest.mp3">Cryogenic Unrest</a></li>
-  <li onclick="mumbl.track(1);return false"><a href="music/%40F1LT3R%20-%20SOS%20Distress.mp3">SOS Distress</a></li>
-  <li onclick="mumbl.track(2);return false"><a href="music/%40F1LT3R%20-%20Disturbed%20Orbit.mp3">Disturbed Orbit</a></li>
-  <li onclick="mumbl.track(3);return false"><a href="music/%40F1LT3R%20-%20Ghosts%20in%20HyperSpace.mp3">Ghosts in HyperSpace</a></li>
-  <li onclick="mumbl.track(4);return false"><a href="music/%40F1LT3R%20-%20Binary%20Lovers.mp3">Binary Lovers</a></li>
+  <li><a onclick="mumbl.track(0);return false" href="music/%40F1LT3R%20-%20Cryogenic%20Unrest.mp3">Cryogenic Unrest</a></li>
+  <li><a onclick="mumbl.track(1);return false" href="music/%40F1LT3R%20-%20SOS%20Distress.mp3">SOS Distress</a></li>
+  <li><a onclick="mumbl.track(2);return false" href="music/%40F1LT3R%20-%20Disturbed%20Orbit.mp3">Disturbed Orbit</a></li>
+  <li><a onclick="mumbl.track(3);return false" href="music/%40F1LT3R%20-%20Ghosts%20in%20HyperSpace.mp3">Ghosts in HyperSpace</a></li>
+  <li><a onclick="mumbl.track(4);return false" href="music/%40F1LT3R%20-%20Binary%20Lovers.mp3">Binary Lovers</a></li>
 </ol>
 
 <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>

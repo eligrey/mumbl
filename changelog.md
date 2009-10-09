@@ -1,13 +1,32 @@
 mumbl Changelog
 ===============
 
+0.1a3
+-----
+
+ * Added real `canplaythrough` event support in SM2.
+ * Completely scraped and re-did the shuffling feature to allow playlist manipulation.
+   The play order is now changed instead of the playlist itself. mumbl's shuffle
+   implementation is now compatible with Songbird's.
+ * Removed the `trackready` event. The `canplay` event is sufficient for the same usage.
+ * Added a shuffle button to the demo.
+ * Added `position` and `duration` events. There's now no more need to make timers
+   that continuously check `mumbl.position()`.
+ * Shortened many event names. These will likely be the final event names for v0.1 gold.
+
+### Bugfixes
+
+ * \[HTML5, SM2\] Fixed regression from 0.1a2 that messed up the internal `onEnded`
+   function.
+ * \[Songbird\] Fixed `mumbl.volume()` returning a value 0xFF<sup>2</sup> times too high.
+
 0.1a2
 -----
 
  * Threw out the old events system in favor of a event listener subscription system.
    Now use `mumbl.listen(event, handler)` and `mumbl.unlisten(event, handler)`.
  * Added `mumbl.onready(callback [, scope])` which calls `callback()` right away
-   unless the player being used is SoundManager2, in which case t
+   unless the player being used is SM2, in which case t
 
 0.1a1
 -----
