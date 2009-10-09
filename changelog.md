@@ -26,7 +26,8 @@ mumbl Changelog
  * Threw out the old events system in favor of a event listener subscription system.
    Now use `mumbl.listen(event, handler)` and `mumbl.unlisten(event, handler)`.
  * Added `mumbl.onready(callback [, scope])` which calls `callback()` right away
-   unless the player being used is SM2, in which case t
+   unless the player being used is SM2, in which case it is forwarded to
+   `soundManager.onready`.
 
 0.1a1
 -----
