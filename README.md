@@ -135,7 +135,7 @@ API
     <code>false</code>.
   </dd>
 
-  <dt><code>mumbl.players.addPlayer(playerName:string):void</code></dt>
+  <dt><code>mumbl.players.addPlayer(playerName:string):int</code></dt>
   <dd>
     Returns the player ID of <code>mumbl.players[playerName.toUpperCase]</code>.
     If no such player already exists, it is added to <code>mumbl.players</code>.
