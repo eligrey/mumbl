@@ -1,6 +1,12 @@
 mumbl Changelog
 ===============
 
+0.1b1
+-----
+ * `listen()` and `unlisten()` methods renamed to `addListener()` and `removeListener()`.
+ * Better absolute URI method for Songbird.
+
+
 0.1a3
 -----
 
@@ -20,6 +26,7 @@ mumbl Changelog
    function.
  * \[Songbird\] Fixed `mumbl.volume()` returning a value 0xFF<sup>2</sup> times too high.
 
+
 0.1a2
 -----
 
@@ -28,6 +35,7 @@ mumbl Changelog
  * Added `mumbl.onready(callback [, scope])` which calls `callback()` right away
    unless the player being used is SM2, in which case it is forwarded to
    `soundManager.onready`.
+
 
 0.1a1
 -----

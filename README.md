@@ -1,7 +1,7 @@
 mumbl
 =====
 
-*Version 0.1a3*
+*Version 0.1b1*
 
 **mumbl** is a JavaScript library that makes it easy to play music and create playlists
 on web pages.
@@ -91,7 +91,7 @@ API
     already unmuted.
   </dd>
 
-  <dt><code>mumbl.listen(event:string, handler:function):void</code></dt>
+  <dt><code>mumbl.addListener(event:string, handler:function):void</code></dt>
   <dd>This calls <code>handler</code> whenever the specified event is dispatched.</dd>
 
   <dt><code>mumbl.loop(loopType:int /*0 to 2*/)</code></dt>
@@ -101,7 +101,7 @@ API
     <br />
     If <code>loopType</code> is <code>0</code>, looping is turned off.
     <br />
-    If <code>loopType</code> is <code>1</code>, the current track is looped.
+    If <code>loopType</code> is <code>1</code>, the currently selected track is looped.
     <br />
     If <code>loopType</code> is <code>2</code>, the playlist is looped. This is the
     default <code>loopType</code>.
@@ -118,10 +118,10 @@ API
   </dd>
 
   <dt><code>mumbl.play():void</code></dt>
-  <dd>Plays the current track at its current position.</dd>
+  <dd>Plays the currently selected track at its current position.</dd>
 
   <dt><code>mumbl.pause():void</code></dt>
-  <dd>Pauses playback of the current track.</dd>
+  <dd>Pauses playback of the currently selected track.</dd>
 
   <dt><code>mumbl.paused():boolean</code></dt>
   <dd>
@@ -146,14 +146,14 @@ API
     If <code>newPosition</code> is not a number, the current position of the current
     track is returned.
     <br />
-    If <code>newPosition</code> is defined, the current track will seek to
+    If <code>newPosition</code> is a number, the currently selected track will seek to
     <code>newPosition</code>.
   </dd>
 
   <dt><code>mumbl.previous():void</code></dt>
   <dd>Selects the previous track in the playlist from the currently selected track.</dd>
 
-  <dt><code>mumbl.shuffle(shuffleState:boolean):boolean, void)</code></dt>
+  <dt><code>mumbl.shuffle(shuffleState:boolean):boolean, void</code></dt>
   <dd>
     If <code>shuffleState</code> is not boolean, the shuffle state of the playlist
     is returned.
@@ -162,7 +162,7 @@ API
     order.
     <br />
     If <code>shuffleState</code> is <code>false</code>, the playlist is played in the
-    order that it was defined.
+    order that it was created.
   </dd>
 
   <dt><code>mumbl.stop():void</code></dt>
@@ -174,14 +174,16 @@ API
   <dt><code>mumbl.stopped():boolean</code></dt>
   <dd>
     Returns <code>true</code> if player is currently stopped. Otherwise, returns
-    <code>false</code>. <code>mumbl.stopped()</code> is <code>false</code> after
-    you select a track because the track is loaded. It will only be <code>true</code>
-    again after you call <code>mumbl.stop()</code> or <code>mumbl.clear()</code>.
+    <code>false</code>.
   </dd>
 
   <dt><code>mumbl.track(trackNumber:int):void</code></dt>
   <dd>
-    Selects <code>trackNumber</code> from the playlist as the current track.
+    If <code>trackNumber</code> is not a number, the index of the currently selected
+    track in the playlist is returned.
+    <br />
+    If <code>trackNumber</code> is a number, the track in the playlist with the
+    index of <code>trackNumber</code> is selected.
     mumbl uses a zero-index array for a playlist.
   </dd>
 
@@ -194,7 +196,7 @@ API
     paused.
   </dd>
 
-  <dt><code>mumbl.unlisten(event:string, handler:function):void</code></dt>
+  <dt><code>mumbl.removeListener(event:string, handler:function):void</code></dt>
   <dd>
     This removes a previous event listener which calls <code>handler</code> when
     the specified event is dispatched.
@@ -205,7 +207,7 @@ API
     If <code>newVolume</code> is not a number, the player volume (0 to 1) is
     returned.
     <br />
-    If <code>newVolume</code> is defined, the player volume is set to
+    If <code>newVolume</code> is a number, the player volume is set to
     <code>newVolume</code>.
   </dd>
 </dl>
@@ -215,8 +217,7 @@ API
 <dl>
   <dt><code>mumbl.version</code></dt>
   <dd>
-    A string representing the version of the mumbl script. The version string is in the
-    format of <code><em>major</em>.<em>minor</em>.<em>revision</em></code>.
+    A string representing the version of the mumbl library being used.
   </dd>
 
   <dt><code>mumbl.players</code></dt>
@@ -244,8 +245,8 @@ API
 
 ### Events
 
-Events can be subscribed to and unsubscribed from with `mumbl.listen()` and
-`mumbl.unlisten()`.External events are events resulting from direct interaction
+Events can be subscribed to and unsubscribed from with `mumbl.addListener()` and
+`mumbl.removeListener()`.External events are events resulting from direct interaction
 with a native interface for a player (like Songbird).
 
 <dl>
@@ -303,7 +304,7 @@ with a native interface for a player (like Songbird).
   <dd>This is dispatched when the player's shuffling state is externally changed.</dd>
 </dl>
 
-Note: There is no `ready` event which can be subscribed to with `mumbl.listen()`. The
+Note: There is no `ready` event which can be subscribed to with `mumbl.addListener()`. The
 `mumbl.onready()` subscription method should be used instead.
 
 -----
@@ -339,14 +340,13 @@ Roadmap
      be played using mumbl.
    * Make the demo mumbl-powered music player (it will be renamed "mumblr")
      portable and reusable.
-     * Remove jQuery dependancy from mumblr.
-     * Add a shuffle button to mumblr.
-     * Maybe make the track title display scroll (maybe using a `<marquee>`) when
+     * Remove jQuery dependency from mumblr.
+     * Maybe make the track title display scroll (maybe using a &lt;marquee&gt;) when
        it overflows.
  * Version 0.2
    * Full compatability with every major browser.
  * The distant future
-   * Create a simplified flash audio backend for mumbl that integrates much more
+   * Create a simplified flash audio back-end for mumbl that integrates much more
      nicely and has a smaller file size than SoundManager2.
 
 

@@ -3,13 +3,14 @@ var isSB = mumbl.player === mumbl.players.SONGBIRD;
 if (mumbl.player !== mumbl.players.UNSUPPORTED) {
 
 mumbl.onready(function () {
-var _continue = function () {
-	start();
-	mumbl.unlisten("canplay", _continue);
-	mumbl.unlisten("load", _continue);
-	mumbl.unlisten("canplaythrough", _continue);
-	
-};
+function continueOn(event) {
+	var listener = function () {
+		mumbl.removeListener(event);
+		start();
+	};
+	mumbl.addListener(event, listener);
+}
+
 if (mumbl.player === mumbl.players.SOUNDMANAGER2) {
 	start(); // no idea why this is needed
 	// TODO: figure out why I have to start() when using SM2
@@ -113,16 +114,15 @@ asyncTest("playing music", function () {
 	
 		equals( mumbl.volume(), 0.5, "mumbl.volume(0.5)" );
 		
-		
 		mumbl.volume(0.8);
 		mumbl.next();
 		setTimeout(function () {
 			equals( Math.floor(mumbl.volume() * 10), 8, "volume persistance" );
-			start();
 			mumbl.volume(1);
+			start();
 		}, 100);
 	} else {
-		mumbl.listen("canplay", _continue);
+		continueOn("canplay");
 		mumbl.track(0);
 	}
 });
@@ -137,7 +137,7 @@ asyncTest("shuffle", function () {
 	mumbl.shuffle(false);
 	equals( mumbl.shuffle(), false, "shuffle off" );
 
-	mumbl.listen("load", _continue);
+	continueOn("load");
 	mumbl.track(0);
 });
 asyncTest("looping", function () {

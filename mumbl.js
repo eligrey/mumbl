@@ -1,6 +1,6 @@
 /*
- * mumbl JavaScript Library v0.1a3
- * 2009-10-09
+ * mumbl JavaScript Library v0.1b1
+ * 2009-10-15
  * By Elijah Grey, http://eligrey.com
  *
  * See README.md for help
@@ -110,7 +110,7 @@ self.mumbl || (self.mumbl = (function (window) {
 	},
 	
 	mumbl  = {
-		version: "0.1a3",
+		version: "0.1b1",
 		player: 0,
 		players: {
 			UNSUPPORTED   : 0,
@@ -125,13 +125,13 @@ self.mumbl || (self.mumbl = (function (window) {
 				return this[playerName];
 			}
 		},
-		listen: function (event, handler) {
+		addListener: function (event, handler) {
 			if (events.hasOwnProperty(event)) {
 				typeof handler === "function" &&
 					events[event].unshift(handler);
 			}
 		},
-		unlisten: function (event, handler) {
+		removeListener: function (event, handler) {
 			if (events.hasOwnProperty(event)) {
 				event = events[event];
 				handler = arrayIndexOf.call(event, handler);
@@ -331,7 +331,6 @@ self.mumbl || (self.mumbl = (function (window) {
 		player               = window.songbird;
 		
 		var currentTrack     = 0,
-		loc                  = window.location,
 		notSettingVolume     = True,
 		notChangingPlayState = True,
 		notMuting            = True,
@@ -348,17 +347,9 @@ self.mumbl || (self.mumbl = (function (window) {
 		},
 		// convert relative URIs to absolute for Songbird
 		absoluteURI          = function (uri) {
-			var protocol = loc.protocol + "//";
-			uri = uri.replace(/^\/\//, protocol); // handle "//example.com"
-			if (/^[\w\-]+:/.test(uri)) {
-				return uri;
-			}
-			if (uri.substr(0, 1) === "/") { // root uri
-				return protocol + loc.host + uri;
-			} else { // remove everything after last slash
-				return protocol + loc.host +
-				  (loc.pathname.replace(/([\s\S]*\/)[\s\S]*$/, "$1")) + uri;
-			}
+			var a = doc.createElement("a");
+			a.setAttribute("href", uri);
+			return a.href;
 		};
 		
 		playlist = library.createSimpleMediaList("mumbl");

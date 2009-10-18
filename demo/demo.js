@@ -215,7 +215,7 @@ mumbl.onready(function () {
 	shuffleBtn.click(shuffleBtnClick);
 	
 	if (!mumbl.INTEGRATED) { // don't listen for this info if there's already a UI
-		mumbl.listen("position", function() {
+		mumbl.addListener("position", function() {
 			var position = mumbl.position();
 			if (position !== lastPosition) {
 				progress.progressbar("value", (position / duration * 100) || 0);
@@ -224,12 +224,12 @@ mumbl.onready(function () {
 			trackPosition.text(toMinsSecs(mumbl.position()));
 		});
 	
-		mumbl.listen("duration", function() {
+		mumbl.addListener("duration", function() {
 			duration = mumbl.duration();
 			trackDuration.text(toMinsSecs(duration));
 		});
 	
-		mumbl.listen("track", function() {
+		mumbl.addListener("track", function() {
 			trackTitle.text(playlist[mumbl.track()] + " - " + playlist.album + " - " + playlist.artist);
 		});
 	}
