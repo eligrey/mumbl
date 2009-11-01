@@ -1,6 +1,6 @@
-var isSB = mumbl.player === mumbl.players.SONGBIRD;
+var isSB = mumbl.playerIs("Songbird");
 
-if (mumbl.player !== mumbl.players.UNSUPPORTED) {
+if (!mumbl.playerIs("unsupported")) {
 
 mumbl.onready(function () {
 function continueOn(event) {
@@ -11,7 +11,7 @@ function continueOn(event) {
 	mumbl.addListener(event, listener);
 }
 
-if (mumbl.player === mumbl.players.SOUNDMANAGER2) {
+if (mumbl.playerIs("SoundManager2")) {
 	start(); // no idea why this is needed
 	// TODO: figure out why I have to start() when using SM2
 }

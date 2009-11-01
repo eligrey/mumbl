@@ -1,10 +1,19 @@
 mumbl Changelog
 ===============
 
+0.1b1.1
+-----
+
+ * `onready()`'s `callback.call()` usage is now ECMAScript 5-compliant.
+ * Added a `playerIs(player)` method to simplify
+   `mumbl.player === mumbl.players[player]` checks.
+
+
 0.1b1
 -----
- * `listen()` and `unlisten()` methods renamed to `addListener()` and `removeListener()`.
- * Better absolute URI method for Songbird.
+
+ * Renamed `listen()` and `unlisten()` methods to `addListener()` and `removeListener()`.
+ * Implemented a much better absolute URI method for Songbird.
 
 
 0.1a3
@@ -17,22 +26,22 @@ mumbl Changelog
  * Removed the `trackready` event. The `canplay` event is sufficient for the same usage.
  * Added a shuffle button to the demo.
  * Added `position` and `duration` events. There's now no more need to make timers
-   that continuously check `mumbl.position()`.
+   that continuously check `position()`.
  * Shortened many event names. These will likely be the final event names for v0.1 gold.
 
 ### Bugfixes
 
  * \[HTML5, SM2\] Fixed regression from 0.1a2 that messed up the internal `onEnded`
    function.
- * \[Songbird\] Fixed `mumbl.volume()` returning a value 0xFF<sup>2</sup> times too high.
+ * \[Songbird\] Fixed `volume()` returning a value 0xFF<sup>2</sup> times too high.
 
 
 0.1a2
 -----
 
  * Threw out the old events system in favor of a event listener subscription system.
-   Now use `mumbl.listen(event, handler)` and `mumbl.unlisten(event, handler)`.
- * Added `mumbl.onready(callback [, scope])` which calls `callback()` right away
+   Now use `listen(event, handler)` and `unlisten(event, handler)`.
+ * Added `onready(callback [, scope])` which calls `callback()` right away
    unless the player being used is SM2, in which case it is forwarded to
    `soundManager.onready`.
 
@@ -41,7 +50,7 @@ mumbl Changelog
 -----
 
  * **SoundManager2 support added!**
- * Beta `mumbl.shuffle()` implementations. They may be changed in the next version to
+ * Beta `shuffle()` implementations. They may be changed in the next version to
    make it possible to change the real playlist when shuffle is on.
  * Songbird audio file origin URI property changed to
    `http://purl.eligrey.com/mumbl#originURI`.
@@ -55,8 +64,8 @@ mumbl Changelog
 0.0.4
 -----
 
- * Added `mumbl.version` string.
- * Added `mumbl.INTEGRATED` boolean. This represents if there is a native integrated
+ * Added `version` string.
+ * Added `INTEGRATED` boolean. This represents if there is a native integrated
    interface being used for the player.
  * Going back to tabs.
  * Added some stuff to get ready for adding SM2 support.
@@ -81,19 +90,19 @@ mumbl Changelog
 -----
 
  * Created unit tests.
- * Added `mumbl.destruct()` method to remove mumbl and stop audio playback.
+ * Added `destruct()` method to remove mumbl and stop audio playback.
  * Added read-only shuffling support for Songbird.
- * Renamed `mumbl.players.AUDIO_TAG` to `mumbl.players.HTML5_AUDIO`.
+ * Renamed `players.AUDIO_TAG` to `players.HTML5_AUDIO`.
  * Removed `onExternal*` event handling code from the HTML5 `<audio>` code as it's
    very unlikely it would ever be fired. The `onExternal*` events still work in Songbird.
-   * Added `mumbl.onExternalLoopingChange` and `mumbl.onExternalShufflingChange`.
+   * Added `onExternalLoopingChange` and `onExternalShufflingChange`.
  * Now using spaces instead of tabs.
 
 ### Bugfixes
- * `mumbl.addTracks` fixed.
- * \[Songbird\] `mumbl.addTrack` now searches through the `TrackItem` for any non-OGG files
+ * `addTracks` fixed.
+ * \[Songbird\] `addTrack` now searches through the `TrackItem` for any non-OGG files
    so you may now put OGG files at the top of your `TrackItem`s (as long as there are
    other formats specified).
- * \[Songbird\] `mumbl.play` now checks to see if `songbird.paused` is true before playing
+ * \[Songbird\] `play` now checks to see if `songbird.paused` is true before playing
    (otherwise Songbird used to crash).
 

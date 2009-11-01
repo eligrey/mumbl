@@ -1,7 +1,7 @@
 mumbl
 =====
 
-*Version 0.1b1*
+*Version 0.1b1.1*
 
 **mumbl** is a JavaScript library that makes it easy to play music and create playlists
 on web pages.
@@ -134,11 +134,18 @@ API
     Returns <code>true</code> if player is currently playing. Otherwise, returns
     <code>false</code>.
   </dd>
+  
+  <dt><code>mumbl.playerIs(playerName:string):boolean</code></dt>
+  <dd>
+    Returns <code>true</code> if the player being used is the player of `playerName`.
+    Otherwise, returns <code>false</code>.
+  </dd>
 
   <dt><code>mumbl.players.addPlayer(playerName:string):int</code></dt>
   <dd>
-    Returns the player ID of <code>mumbl.players[playerName.toUpperCase]</code>.
-    If no such player already exists, it is added to <code>mumbl.players</code>.
+    Returns the player ID of the player of `playerName` (case-insensitive)</code>.
+    If no such player already exists, it is added to <code>mumbl.players</code> and the
+    player ID of the newly added player is returned.
   </dd>
 
   <dt><code>mumbl.position(newPosition:float /*seconds*/):void, float</code></dt>

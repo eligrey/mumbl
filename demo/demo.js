@@ -24,12 +24,12 @@ mumbl.onready(function () {
 		);
 	}
 	
-	if (mumbl.player === mumbl.players.SONGBIRD) {
+	if (mumbl.playerIs("Songbird")) {
 	// stop Songbird from making it's own playlist out of the links on the page
 		$("#playlist a").attr("href", "#");
 	}
 	
-	if (mumbl.INTEGRATED || mumbl.player === mumbl.players.UNSUPPORTED) {
+	if (mumbl.INTEGRATED || mumbl.playerIs("unsupported")) {
 		// hide interface if there is a native interface or if mumbl is unsupported
 		$("#mumbl-player").hide();
 		if (mumbl.INTEGRATED) {

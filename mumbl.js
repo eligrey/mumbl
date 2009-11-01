@@ -1,6 +1,6 @@
 /*
- * mumbl JavaScript Library v0.1b1
- * 2009-10-15
+ * mumbl JavaScript Library v0.1b1.1
+ * 2009-11-01
  * By Elijah Grey, http://eligrey.com
  *
  * See README.md for help
@@ -22,8 +22,6 @@
  * Songbird:
  *  - [FIXED] http://bugzilla.songbirdnest.com/show_bug.cgi?id=17577
  *      songbird.play() crashes Songbird unless playing and paused
- *  - http://bugzilla.songbirdnest.com/show_bug.cgi?id=17580
- *      songbird.playURL doesn't display artist/track name/etc.
  *  - http://bugzilla.songbirdnest.com/show_bug.cgi?id=17578
  *      songbird.duration or songbird.length needed for currently playing song
  *  - http://bugzilla.songbirdnest.com/show_bug.cgi?id=17582
@@ -69,9 +67,6 @@ self.mumbl || (self.mumbl = (function (window) {
 	$mute              = "mute",
 	$shuffle           = "shuffle",
 	
-	True               = !0,
-	False              = !True,
-	
 	players            = 4,
 	
 	events             = {},
@@ -85,6 +80,9 @@ self.mumbl || (self.mumbl = (function (window) {
 	duration           = 0,
 	volume             = 1,
 	playlistLen        = 0,
+	
+	True               = !0,
+	False              = !True,
 	
 	muted              = False,
 	stopped            = True,
@@ -110,20 +108,25 @@ self.mumbl || (self.mumbl = (function (window) {
 	},
 	
 	mumbl  = {
-		version: "0.1b1",
+		version: "0.1.0b1.1",
 		player: 0,
 		players: {
 			UNSUPPORTED   : 0,
 			HTML5_AUDIO   : 1,
 			SONGBIRD      : 2,
 			SOUNDMANAGER2 : 3,
-			addPlayer     : function (playerName) { // use this to add custom players
-				playerName = playerName.toUpperCase();
-				if (!(playerName in this)) {
-					this[playerName] = players++;
+			addPlayer     : function (player) { // use this to add custom players
+				player = player.toUpperCase().replace(/\s+/g, "_");
+				if (!(player in this)) {
+					this[player] = players++;
 				}
-				return this[playerName];
+				return this[player];
 			}
+		},
+		playerIs: function (player) {
+			return this.player === this.players[
+				player.toUpperCase().replace(/\s+/g, "_")
+			];
 		},
 		addListener: function (event, handler) {
 			if (events.hasOwnProperty(event)) {
@@ -146,7 +149,9 @@ self.mumbl || (self.mumbl = (function (window) {
 		},
 		onready: function (callback, scope) {
 			if (mumbl.player !== 3) { // !== mumbl.players.SOUNDMANAGER2
-				callback.call(scope);
+				callback.call(
+					scope === null || typeof scope === "undefined" ? window : scope
+				);
 			} else {
 				player.onready(callback, scope);
 			}
