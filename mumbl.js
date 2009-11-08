@@ -108,7 +108,7 @@ self.mumbl || (self.mumbl = (function (window) {
 	},
 	
 	mumbl  = {
-		version: "0.1.0b1.1",
+		version: "0.1.0b2",
 		player: 0,
 		players: {
 			UNSUPPORTED   : 0,
@@ -241,7 +241,7 @@ self.mumbl || (self.mumbl = (function (window) {
 	onExternalLoopingChange   = eventDispatcher($external + "looping"),
 	onExternalShufflingChange = eventDispatcher($external + "shuffling"),
 	
-	all_track_handlers = function () {
+	allTrackHandlers = function () {
 		onTrackChange();
 		onDurationUpdate();
 		onPositionUpdate();
@@ -374,7 +374,7 @@ self.mumbl || (self.mumbl = (function (window) {
 				)  / 1000000 // convert microseconds to seconds
 			) || 0;
 			
-			all_track_handlers();
+			allTrackHandlers();
 		};
 		
 		
@@ -427,7 +427,7 @@ self.mumbl || (self.mumbl = (function (window) {
 			player[$stop]();
 			duration = 0;
 			stopped = True;
-			all_track_handlers();
+			allTrackHandlers();
 		};
 		mumbl[$mute] = function (state) {
 			if (typeof state !== $bool) {
@@ -606,7 +606,7 @@ self.mumbl || (self.mumbl = (function (window) {
 			duration = 0;
 			clearChildren();
 			player.load();
-			all_track_handlers();
+			allTrackHandlers();
 		};		
 		mumbl[$clear] = function () {
 			mumbl[$stop]();
@@ -731,7 +731,7 @@ self.mumbl || (self.mumbl = (function (window) {
 			sound.setPosition(0);
 			sound[$play]();
 			if (sound.loaded) {
-				all_track_handlers();
+				allTrackHandlers();
 			}
 		},
 		canPlayThrough = function () {
@@ -758,7 +758,7 @@ self.mumbl || (self.mumbl = (function (window) {
 			// for some reason, SM2 disregards inherited properties, so
 			// don't use SoundOpts.prototype
 			// callbacks
-			opts.onload                 = all_track_handlers;
+			opts.onload                 = allTrackHandlers;
 			opts.whileloading           = readyCheck;
 			opts.whileplaying           = canPlayThrough;
 			opts.onfinish               = onEnded;
