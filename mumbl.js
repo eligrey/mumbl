@@ -1,6 +1,6 @@
 /*
- * mumbl JavaScript Library v0.1b1.1
- * 2009-11-01
+ * mumbl JavaScript Library v0.1b2
+ * 2009-11-07
  * By Elijah Grey, http://eligrey.com
  *
  * See README.md for help
@@ -344,7 +344,7 @@ self.mumbl || (self.mumbl = (function (window) {
 		library              = player.siteLibrary,
 		durationProp         = "http://songbirdnest.com/data/1.0#duration",
 		uriProp              = "http://purl.eligrey.com/mumbl#originURI",
-		isOGG                = /^a(?:udio|pplication)\/(?:x-)?ogg;?/i,
+		isOGG                = /^a(?:udio|pplication)\/(?:x-)?ogg\s*;?/i,
 		addListener          = function (topic, handler) {
 			player.addListener(topic, {
 				observe: handler
@@ -399,7 +399,7 @@ self.mumbl || (self.mumbl = (function (window) {
 		};
 		mumbl[$add_track] = function (uri) {
 			// Songbird can play anything gstreamer can but has issues with seeking OGG
-			// files, so prefer anything that doesn't match /^a(udio|pplication)\/ogg;?/i
+			// files, so prefer anything that doesn't match ^a(udio|pplication)\/ogg
 			if (arguments[$length] > 2) { // more than one file specified
 				var args = slice(arguments),
 				len = args[$length],
@@ -702,6 +702,7 @@ self.mumbl || (self.mumbl = (function (window) {
 			onDurationUpdate();
 		});
 		addEvent("timeupdate", onPositionUpdate);
+		addEvent("suspend", onTrackLoad); // most likely loaded
 		addEvent("load", onTrackLoad);
 		addEvent("canplay", onCanPlayTrack);
 		addEvent("canplaythrough", onCanPlayThroughTrack);
@@ -721,7 +722,7 @@ self.mumbl || (self.mumbl = (function (window) {
 		currentTrackId,
 		// matches MP3, AAC (not AACP), Speex, and ADPCM media types
 		// http://en.wikipedia.org/wiki/Flash_Video#Codec_support
-		codecs = /^audio\/(?:x-)?(?:mp(?:eg|3)|mp4a-latm|aac|speex|(?:32k)?adpcm);?/i,
+		codecs = /^audio\/(?:x-)?(?:mp(?:eg|3)|mp4a-latm|aac|speex|(?:32k)?adpcm)\s*;?/i,
 		getCurrentTrack = function () {
 			return sounds[currentTrackId];
 		},

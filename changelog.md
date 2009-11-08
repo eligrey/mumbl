@@ -1,6 +1,15 @@
 mumbl Changelog
 ===============
 
+0.1b2
+-----
+
+ * `load` event changed to listen for `suspend` instead of `load` as Firefox no longer
+   supports the `load` event on media elements.
+ * Audio media types in TrackItems may now contain whitespace before the optional
+   semicolon used for specifying the codecs.
+
+
 0.1b1.1
 -----
 
