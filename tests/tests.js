@@ -3,42 +3,41 @@ var isSB = mumbl.playerIs("Songbird");
 if (!mumbl.playerIs("unsupported")) {
 
 mumbl.onready(function () {
-function continueOn(event) {
-	var listener = function () {
-		mumbl.removeListener(event);
+var continueOn = function (event) {
+	var observer = function (event) {
+		mumbl.removeListener(event, arguments.callee);
 		start();
 	};
-	mumbl.addListener(event, listener);
-}
-
-if (mumbl.playerIs("SoundManager2")) {
-	start(); // no idea why this is needed
-	// TODO: figure out why I have to start() when using SM2
-}
-
-var playlist = [
+	mumbl.addListener(event, observer);
+},
+playlist = [
 	"Cryogenic%20Unrest",
 	"Disturbed%20Orbit",
 	"SOS%20Distress",
 	"Ghosts%20in%20HyperSpace",
 	"Binary%20Lovers"
 ],
-methods = "play stop pause position volume playing stopped paused loop duration addTrack removeTrack addTracks next previous clear track tracks length togglePause mute shuffle".split(" ");
+properties = "version player players playerIs addListener removeListener destruct onready INTEGRATED length playing paused stopped next previous togglePause shuffle addTracks duration _interface play pause stop clear addTrack removeTrack tracks loop mute track position volume".split(" ");
 playlist.location = "../demo/music/%40F1LT3R%20-%20";
+
+if (mumbl.playerIs("SoundManager2")) {
+	setTimeout(function () {
+		start(); // no idea why this is needed
+		// TODO: figure out why I have to start() when using SM2
+	}, 500);
+}
 
 test("core", function () {
 	expect(1);
-	var i = methods.length, pass = true,
-	desc = "missing methods: ", missing = [];
+	var i = properties.length,
+	desc = "missing properties: [", missing = [];
 	while (i--) {
-		if (typeof mumbl[methods[i]] !== "function") {
-			pass = false;
-			missing.push(methods[i]);
+		if (!(properties[i] in mumbl)) {
+			missing.push(properties[i]);
 		}
 	}
-	ok(pass, desc + missing.join(", "));
+	ok(!missing.length, desc + missing.join(", ") + "]");
 });
-
 asyncTest("playlist management", function () {
 	expect(8);
 	
@@ -89,8 +88,7 @@ asyncTest("playing music", function () {
 	
 	mumbl.play();
 	
-	ok( confirm("Press OK if you hear music playing.\nIf you are using " +
-			   "Google Chrome, you may only hear it for a moment."), "mumbl.play" );
+	ok( confirm("Press OK if you hear music playing (it may take a moment to start, give it some time)"), "mumbl.play" );
 	equals( mumbl.playing(), true, "after playing: mumbl.playing" );
 	equals( mumbl.paused(), false, "after playing: mumbl.paused" );
 	equals( mumbl.stopped(), false, "after playing: mumbl.stopped" );
@@ -142,31 +140,20 @@ asyncTest("shuffle", function () {
 });
 asyncTest("looping", function () {
 	expect(2);
-	var container = document.getElementById("question-box"),
-	loopingWorks = document.createElement("button"),
-	loopingDoesntWork = document.createElement("button");
-	loopingWorks.innerHTML = "Looping works";
-	loopingDoesntWork.innerHTML = "Looping doesn't work";
-	loopingWorks.onclick = function () {
-		container.removeChild(loopingWorks);
-		container.removeChild(loopingDoesntWork);
-		ok(true, "looping");
-		start();
-	};
-	loopingDoesntWork.onclick = function () {
-		container.removeChild(loopingWorks);
-		container.removeChild(loopingDoesntWork);
-		ok(false, "looping");
-		start();
-	};
-	container.appendChild(loopingWorks);
-	container.appendChild(loopingDoesntWork);
+	var container = document.getElementById("wait-message"),
+	message = container.appendChild(document.createTextNode("Please wait for the looping test to finish..."));
 	
 	mumbl.play();
-	mumbl.position(155);
-	mumbl.loop(1);
-	
-	equals( mumbl.loop(), 1, "mumbl.loop" );
+	setTimeout(function () { // can't call position right away in chrome
+		mumbl.position(155);
+		mumbl.loop(1);
+		equals( mumbl.loop(), 1, "mumbl.loop" );
+		setTimeout(function () {
+			ok(mumbl.position() < 155, "looping");
+			container.removeChild(message);
+			start();
+		}, 11000);
+	}, 100);
 })
 }
 
@@ -174,13 +161,12 @@ asyncTest("duration and position", function () {
 	expect(2 - isSB);
 	if (!isSB) {
 		mumbl.position(10);
-		setTimeout(function () { // currentTime takes a moment to update in Firefox
+		setTimeout(function () { // Firefox takes a moment to update currentTime
 			var pos = Math.floor(mumbl.position());
-			ok( pos > 8 && pos < 12, "mumbl.position (if this fails reload the test suite and try once more, slowly)" );
+			ok( pos > 8 && pos < 15, "mumbl.position (if this fails, reload the test suite and try again, slowly)" );
 			start();
-		}, 100);
+		}, 500);
 	}
-	156
 	var duration = Math.floor(mumbl.duration());
 	ok( duration === 156 || duration === 163, "mumbl.duration" );
 	
@@ -195,8 +181,7 @@ test("destruct", function () {
 	equals(typeof window.mumbl, "undefined", "mumbl.destruct");
 });
 
-}, window)
-
+}, window);
 
 } else {
 	test("player support", function () {

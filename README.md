@@ -1,7 +1,7 @@
 mumbl
 =====
 
-*Version 0.1b2*
+*Version 0.1b3*
 
 **mumbl** is a JavaScript library that makes it easy to play music and create playlists
 on web pages.
@@ -15,12 +15,6 @@ A demo is included with mumbl but if you dont want to download it, there is also
 
 Please note that mumbl is not the player in the demo. mumbl is the *back-end* and the
 demo is just an example of using mumbl.
-
-
-Testers Needed!
----------------
-
-If you would like to help test mumbl on your browser, please [contact me][contact].
 
 
 Supported Platforms
@@ -91,8 +85,11 @@ API
     already unmuted.
   </dd>
 
-  <dt><code>mumbl.addListener(event:string, handler:function):void</code></dt>
-  <dd>This calls <code>handler</code> whenever the specified event is dispatched.</dd>
+  <dt><code>mumbl.addListener(event:string, observer:function(event)):void</code></dt>
+  <dd>
+    This calls <code>observer</code>, passing it the event type as an argument,
+    whenever the specified event is dispatched.
+   </dd>
 
   <dt><code>mumbl.loop(loopType:int /*0 to 2*/)</code></dt>
   <dd>
@@ -203,9 +200,9 @@ API
     paused.
   </dd>
 
-  <dt><code>mumbl.removeListener(event:string, handler:function):void</code></dt>
+  <dt><code>mumbl.removeListener(event:string, observer:function):void</code></dt>
   <dd>
-    This removes a previous event listener which calls <code>handler</code> when
+    This removes a previous event listener which calls <code>observer</code> when
     the specified event is dispatched.
   </dd>
 
@@ -253,19 +250,13 @@ API
 ### Events
 
 Events can be subscribed to and unsubscribed from with `mumbl.addListener()` and
-`mumbl.removeListener()`.External events are events resulting from direct interaction
+`mumbl.removeListener()`. External events are events resulting from direct interaction
 with a native interface for a player (like Songbird).
 
 <dl>
-  <dt><code>trackchange</code></dt>
+  <dt><code>track</code></dt>
   <dd>
-    This is dispatched when a track is selected. The track number is available at
-    this time.
-  </dd>
-  
-  <dt><code>trackready</code></dt>
-  <dd>
-    This is dispatched as soon as it is possible to start playing a track.
+    This is dispatched when a track is selected.
   </dd>
   
   <dt><code>position</code></dt>
@@ -348,11 +339,11 @@ Roadmap
    * Make the demo mumbl-powered music player (it will be renamed "mumblr")
      portable and reusable.
      * Remove jQuery dependency from mumblr.
-     * Maybe make the track title display scroll (maybe using a &lt;marquee&gt;) when
+     * Make the track title display scroll (maybe using a &lt;marquee&gt;) when
        it overflows.
  * Version 0.2
    * Full compatability with every major browser.
- * The distant future
+ * The distant future (version 1.0)
    * Create a simplified flash audio back-end for mumbl that integrates much more
      nicely and has a smaller file size than SoundManager2.
 
@@ -361,4 +352,3 @@ Roadmap
   [demo]: http://purl.eligrey.com/mumbl/demo
   [sb]: http://getsongbird.com/
   [sm2]: http://www.schillmania.com/projects/soundmanager2/
-  [bug15169]: http://bugzilla.songbirdnest.com/show_bug.cgi?id=15169

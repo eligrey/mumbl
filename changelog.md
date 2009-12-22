@@ -1,6 +1,28 @@
 mumbl Changelog
 ===============
 
+0.1b3
+-----
+
+ * `version` is now an array instead of a string. The first three items are version
+   number parts and the fourth item is a string specifying the status of the version.
+   The statuses are a(lpha), b(eta), c(andidate for release), d(ev, pre-alpha) and
+   r(elease). The fifth and last item is the version of the status (always 1 for
+   release versions). `version.toString()` returns a human-readable version still.
+ * Better absolute URI resolving for Songbird.
+ * Changed terminology for "event handlers". A function passed to a listener method is
+   now called an observer. 
+ * Fixed `clearChildren` internal method used to remove the children of the audio element.
+ * The test suite has been improved and also now has the looping test automated. The
+   points of human interaction are now only the "do you hear music" and "do you not hear
+   music" questions.
+ * Event observers are now passed the event type they are observing.
+ * Removed `trackready` event from documentation. You should be listening for `duration`
+   instead.
+ * I previously forgot to mention in the changelog and update the documentation that
+   the `trackchange` event has been renamed to `track`. This is now fixed.
+
+
 0.1b2
 -----
 
