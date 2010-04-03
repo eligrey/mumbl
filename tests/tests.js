@@ -2,14 +2,15 @@ var isSB = mumbl.playerIs("Songbird");
 
 if (!mumbl.playerIs("unsupported")) {
 
-mumbl.onready(function () {
+mumbl.onready(function (mumbl) {
 var continueOn = function (event) {
 	var observer = function (event) {
-		mumbl.removeListener(event, arguments.callee);
+		mumbl.unobserve(event, observer);
 		start();
 	};
-	mumbl.addListener(event, observer);
+	mumbl.observe(event, observer);
 },
+self = this,
 playlist = [
 	"Cryogenic%20Unrest",
 	"Disturbed%20Orbit",
@@ -17,7 +18,7 @@ playlist = [
 	"Ghosts%20in%20HyperSpace",
 	"Binary%20Lovers"
 ],
-properties = "version player players playerIs addListener removeListener destruct onready INTEGRATED length playing paused stopped next previous togglePause shuffle addTracks duration _interface play pause stop clear addTrack removeTrack tracks loop mute track position volume".split(" ");
+properties = "version player players playerIs createEventDispatcher observe unobserve destruct onready integrated length playing paused stopped next previous togglePause shuffle addTracks duration interface play pause stop clear addTrack removeTrack tracks loop mute track position volume".split(" ");
 playlist.location = "../demo/music/%40F1LT3R%20-%20";
 
 if (mumbl.playerIs("SoundManager2")) {
@@ -37,6 +38,17 @@ test("core", function () {
 		}
 	}
 	ok(!missing.length, desc + missing.join(", ") + "]");
+});
+asyncTest("custom events", function () {
+	expect(1);
+	var passTest = mumbl.createEventDispatcher("testpass"),
+	observer = function (event) {
+		mumbl.unobserve(event, observer);
+		ok(true, "custom 'testpass' event");
+		start();
+	};
+	mumbl.observe("testpass", observer);
+	passTest();
 });
 asyncTest("playlist management", function () {
 	expect(8);
@@ -73,14 +85,16 @@ asyncTest("playlist management", function () {
 	equals( mumbl.track(), 0, "mumbl.track" );
 	
 	mumbl.next();
+	mumbl.pause();
 	setTimeout(function() {
-		equals( mumbl.track(), 1, "mumbl.next" );
+		equals( mumbl.track(), 1, "mumbl.next (half the time fails on Songbird)" );
 		mumbl.previous();
+		mumbl.pause();
 		setTimeout(function() {
-			equals( mumbl.track(), 0, "mumbl.previous" );
+			equals( mumbl.track(), 0, "mumbl.previous (half the time fails on Songbird)" );
 			start();
-		}, 100);
-	}, 100);
+		}, 1000);
+	}, 1000);
 });
 
 asyncTest("playing music", function () {
@@ -148,6 +162,7 @@ asyncTest("looping", function () {
 		mumbl.position(155);
 		mumbl.loop(1);
 		equals( mumbl.loop(), 1, "mumbl.loop" );
+		alert("Starting looping test. Press OK.");
 		setTimeout(function () {
 			ok(mumbl.position() < 155, "looping");
 			container.removeChild(message);
@@ -178,10 +193,10 @@ asyncTest("duration and position", function () {
 test("destruct", function () {
 	expect(1);
 	mumbl.destruct();
-	equals(typeof window.mumbl, "undefined", "mumbl.destruct");
+	equals(typeof self.mumbl, "undefined", "mumbl.destruct");
 });
 
-}, window);
+}, self);
 
 } else {
 	test("player support", function () {

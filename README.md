@@ -1,7 +1,7 @@
 mumbl
 =====
 
-*Version 0.1b3*
+*Version 0.1*
 
 **mumbl** is a JavaScript library that makes it easy to play music and create playlists
 on web pages.
@@ -20,64 +20,76 @@ demo is just an example of using mumbl.
 Supported Platforms
 -------------------
 
- * HTML5 &lt;audio/&gt;
- * [Songbird][sb]
- * [SoundManager 2][sm2] version 2.95a.20090717 and higher
+* HTML5 &lt;audio/&gt;
+* [Songbird][sb]
+* [SoundManager 2][sm2] version 2.95b.20100323 or higher
 
 
-Tested Browsers
----------------
+Supported Platforms
+-------------------
 
----
-
-### Legend
-
- * **\[SM2\]**: SoundManager2
- * **\[HTML5\]**: HTML5 &lt;audio/&gt;
- * **\[SB\]**: Songbird 
-
----
-
- * Linux
-     * **\[SM2\]** Firefox 3
-     * **\[HTML5\]** Firefox 3.5
-     * **\[SM2\]** Opera 10
-     * **\[SM2\]** Google Chrome
-     * **\[HTML5\]** Chromium
-     * **\[SB\]** Songbird 1.2-1.4
+* HTML5
+    * Firefox 3.5+
+    * Google Chrome 4+
+* SoundManager 2 (version 2.95b.20100323+)
+    * Firefox 1.5+
+    * Opera 10+
+    * Google Chrome 1+
+* Songbird 1.4+
 
 
 API
 ---
 
+Strong and emphasized text has titles (which can be viewed by hovering your cursor over
+them) containing their type if they are not functions or return type if they are.
+
+
 ### Methods
 
 <dl>
-  <dt><code>mumbl.addTrack(TrackItem):void</code></dt>
+  <dt><code>mumbl.<strong title="void">addTrack</strong>(<strong title="Array.&lt;?String&gt;">TrackItem</strong>)</code></dt>
   <dd>Adds <code>TrackItem</code>* to the playlist.</dd>
 
-  <dt><code>mumbl.addTracks(TrackItemList):void</code></dt>
+  <dt><code>mumbl.<strong title="void">addTracks</strong>(<strong title="Array.&lt;TrackItem&gt;">TrackItemList</strong>)</code></dt>
   <dd>
     Adds every <code>TrackItem</code> in <code>TrackItemList</code> to the playlist.
   </dd>
 
-  <dt><code>mumbl.clear():void</code></dt>
-  <dd>Clears the playlist.</dd>
-
-  <dt><code>mumbl.destruct():void</code></dt>
-  <dd>Uninitializes mumbl. <code>window.mumbl</code> will be deleted.</dd>
-
-  <dt><code>mumbl.duration():float</code></dt>
-  <dd>Returns the duration in seconds of the currently selected track.</dd>
-
-  <dt><code>mumbl.length():int</code></dt>
-  <dd>Returns the amount of tracks in the playlist.</dd>
-
-  <dt><code>mumbl.mute(muteState:boolean):boolean, void</code></dt>
+  <dt><code>mumbl.<strong title="void">clear</strong>()</code></dt>
   <dd>
-    If <code>muteState</code> is not boolean, this returns <code>true</code> if the
-    player is muted or <code>false</code> if the player is not muted.
-    <br />
+    Clears the playlist.
+  </dd>
+
+  <dt><code>mumbl.<strong title="Function">createEventDispatcher</strong>(<strong title="String">event</strong>)</code></dt>
+  <dd>
+    Creates an event dispatcher for the specified event. Custom events cannot be observed
+    until at least one event dispatcher for the event has been created.
+  </dd>
+
+  <dt><code>mumbl.<strong title="void">destruct</strong>()</code></dt>
+  <dd>
+    Uninitializes mumbl. <code>window.mumbl</code> will be deleted.
+  </dd>
+
+  <dt><code>mumbl.<strong title="Number">duration</strong>()</code></dt>
+  <dd>
+    Returns the duration in seconds of the currently selected track.
+  </dd>
+
+  <dt><code>mumbl.<strong title="Number (non-negative integer)">length</strong>()</code></dt>
+  <dd>
+    Returns the amount of tracks in the playlist.
+  </dd>
+
+  <dt><code>mumbl.<strong title="Boolean">mute</strong>()</code></dt>
+  <dd>
+    Returns <code>true</code> if the player is muted or <code>false</code> if the
+    player is not muted.
+  </dd>
+
+  <dt><code>mumbl.<strong title="void">mute</strong>(<strong title="Boolean">muteState</strong>)</code></dt>
+  <dd>
     If <code>muteState</code> is <code>true</code>, the player is muted if not
     already muted.
     <br />
@@ -85,17 +97,19 @@ API
     already unmuted.
   </dd>
 
-  <dt><code>mumbl.addListener(event:string, observer:function(event)):void</code></dt>
+  <dt><code>mumbl.<strong title="void">observe</strong>(<strong title="String">event</strong>, <strong title="Function">observer</strong>)</code></dt>
   <dd>
-    This calls <code>observer</code>, passing it the event type as an argument,
+    This calls <code>observer</code>, passing it the event type as the first argument,
     whenever the specified event is dispatched.
    </dd>
 
-  <dt><code>mumbl.loop(loopType:int /*0 to 2*/)</code></dt>
+  <dt><code>mumbl.<strong title="Number (integer from 0 to 2)">loop</strong>()</code></dt>
   <dd>
-    If <code>loopType</code> is not a number, the currently stored
-    <code>loopType</code> is returned.
-    <br />
+    Returns the current <code>loopType</code>.
+  </dd>
+
+  <dt><code>mumbl.<strong title="void">loop</strong>(<strong title="Number (integer from 0 to 2)">loopType</strong>)</code></dt>
+  <dd>
     If <code>loopType</code> is <code>0</code>, looping is turned off.
     <br />
     If <code>loopType</code> is <code>1</code>, the currently selected track is looped.
@@ -104,64 +118,70 @@ API
     default <code>loopType</code>.
   </dd>
 
-  <dt><code>mumbl.next():void</code></dt>
+  <dt><code>mumbl.<strong title="void">next</strong>()</code></dt>
   <dd>Selects the next track in the playlist from the currently selected track.</dd>
 
-  <dt><code>mumbl.onready(callback:function [, scope]):void</code></dt>
+  <dt><code>mumbl.<strong title="void">onready</strong>(<strong title="Function">callback</strong> [, <strong title="?Object">scope</strong>])</code></dt>
   <dd>
-    Immediately calls <code>callback()</code> in the specified scope unless the player
-    being used is SoundManager2; in which case the callback and scope are forwarded to
-    <code>soundManager.onready()</code>.
+    After mumbl is ready to be used, the callback is called using the scope specified or
+    the <code>mumbl</code> object if no scope is specified.
   </dd>
 
-  <dt><code>mumbl.play():void</code></dt>
-  <dd>Plays the currently selected track at its current position.</dd>
+  <dt><code>mumbl.<strong title="void">play</strong>()</code></dt>
+  <dd>
+    Plays the currently selected track at its current position.
+  </dd>
 
-  <dt><code>mumbl.pause():void</code></dt>
-  <dd>Pauses playback of the currently selected track.</dd>
+  <dt><code>mumbl.<strong title="void">pause</strong>()</code></dt>
+  <dd>
+    Pauses playback of the currently selected track.
+  </dd>
 
-  <dt><code>mumbl.paused():boolean</code></dt>
+  <dt><code>mumbl.<strong title="Boolean">paused</strong>()</code></dt>
   <dd>
     Returns <code>true</code> if player is currently paused. Otherwise, returns
     <code>false</code>.
   </dd>
 
-  <dt><code>mumbl.playing():boolean</code></dt>
+  <dt><code>mumbl.<strong title="Boolean">playing</strong>()</code></dt>
   <dd>
     Returns <code>true</code> if player is currently playing. Otherwise, returns
     <code>false</code>.
   </dd>
   
-  <dt><code>mumbl.playerIs(playerName:string):boolean</code></dt>
+  <dt><code>mumbl.<strong title="Boolean">playerIs</strong>(<strong title="String">playerName</strong>)</code></dt>
   <dd>
-    Returns <code>true</code> if the player being used is the player of `playerName`.
-    Otherwise, returns <code>false</code>.
+    Returns <code>true</code> if the player being used is the player of
+    <code>playerName</code>. Otherwise, returns <code>false</code>.
   </dd>
 
-  <dt><code>mumbl.players.addPlayer(playerName:string):int</code></dt>
+  <dt><code>mumbl.players.<strong title="Number (non-negative integer)">addPlayer</strong>(<strong title="String">playerName</strong>)</code></dt>
   <dd>
     Returns the player ID of the player of `playerName` (case-insensitive)</code>.
     If no such player already exists, it is added to <code>mumbl.players</code> and the
     player ID of the newly added player is returned.
   </dd>
 
-  <dt><code>mumbl.position(newPosition:float /*seconds*/):void, float</code></dt>
+  <dt><code>mumbl.<strong title="Number">position</strong>()</code></dt>
   <dd>
-    If <code>newPosition</code> is not a number, the current position of the current
-    track is returned.
-    <br />
-    If <code>newPosition</code> is a number, the currently selected track will seek to
-    <code>newPosition</code>.
+    Returns the current seek position, in seconds, of the currently selected track.
   </dd>
 
-  <dt><code>mumbl.previous():void</code></dt>
+  <dt><code>mumbl.<strong title="void">position</strong>(<strong title="Number">newPosition</strong>)</code></dt>
+  <dd>
+    The currently selected track will seek to <code>newPosition</code>, in seconds.
+  </dd>
+
+  <dt><code>mumbl.<strong title="void">previous</strong>()</code></dt>
   <dd>Selects the previous track in the playlist from the currently selected track.</dd>
 
-  <dt><code>mumbl.shuffle(shuffleState:boolean):boolean, void</code></dt>
+  <dt><code>mumbl.<strong title="Boolean">shuffle</strong>()</code></dt>
   <dd>
-    If <code>shuffleState</code> is not boolean, the shuffle state of the playlist
-    is returned.
-    <br />
+    Returns the shuffle state of the playlist.
+  </dd>
+
+  <dt><code>mumbl.<strong title="void">shuffle</strong>(<strong title="Boolean">shuffleState</strong>)</code></dt>
+  <dd>
     If <code>shuffleState</code> is <code>true</code>, the playlist is played in a random
     order.
     <br />
@@ -169,88 +189,91 @@ API
     order that it was created.
   </dd>
 
-  <dt><code>mumbl.stop():void</code></dt>
+  <dt><code>mumbl.<strong title="void">stop</strong>()</code></dt>
   <dd>
     Stops playback if playing and resets the position of the currently selected
     track.
   </dd>
 
-  <dt><code>mumbl.stopped():boolean</code></dt>
+  <dt><code>mumbl.<strong title="Boolean">stopped</strong>()</code></dt>
   <dd>
     Returns <code>true</code> if player is currently stopped. Otherwise, returns
     <code>false</code>.
   </dd>
 
-  <dt><code>mumbl.track(trackNumber:int):void</code></dt>
+  <dt><code>mumbl.<strong title="Number (non-negative integer)">track</strong>()</code></dt>
   <dd>
-    If <code>trackNumber</code> is not a number, the index of the currently selected
-    track in the playlist is returned.
-    <br />
-    If <code>trackNumber</code> is a number, the track in the playlist with the
-    index of <code>trackNumber</code> is selected.
-    mumbl uses a zero-index array for a playlist.
+    Returns the index (zero-based) of the currently selected track in the playlist.
   </dd>
 
-  <dt><code>mumbl.tracks():TrackItemList</code></dt>
+  <dt><code>mumbl.<strong title="void">track</strong>(<strong title="Number (non-negative integer)">trackNumber</strong>)</code></dt>
+  <dd>
+    The track in the playlist with the index (zero-based) of <code>trackNumber</code>
+    is selected.
+  </dd>
+
+  <dt><code>mumbl.<strong title="TrackItemList">tracks</strong>()</code></dt>
   <dd>Returns the <code>TrackItemList</code> representing the playlist.</dd>
 
-  <dt><code>mumbl.togglePause():void</code></dt>
+  <dt><code>mumbl.<strong title="void">togglePause</strong>()</code></dt>
   <dd>
     Toggles the playing state of the player from paused to playing or playing to
     paused.
   </dd>
 
-  <dt><code>mumbl.removeListener(event:string, observer:function):void</code></dt>
+  <dt><code>mumbl.<strong title="void">unobserve</strong>(<strong title="String">event</strong>, <strong title="Function">observer</strong>)</code></dt>
   <dd>
-    This removes a previous event listener which calls <code>observer</code> when
-    the specified event is dispatched.
+    This removes a previously assigned event observer.
   </dd>
 
-  <dt><code>mumbl.volume(newVolume:float /*0 to 1*/):void, float</code></dt>
+  <dt><code>mumbl.<strong title="Number (0 to 1)">volume</strong>()</code></dt>
   <dd>
-    If <code>newVolume</code> is not a number, the player volume (0 to 1) is
-    returned.
-    <br />
-    If <code>newVolume</code> is a number, the player volume is set to
-    <code>newVolume</code>.
+    Returns the player volume from zero to one.
+  </dd>
+
+  <dt><code>mumbl.<strong title="void">volume</strong>(<strong title="Number (0 to 1)">newVolume</strong>)</code></dt>
+  <dd>
+    The player volume (zero to one) is set to <code>newVolume</code>.
   </dd>
 </dl>
 
 ### Fields
 
 <dl>
-  <dt><code>mumbl.version</code></dt>
+  <dt><code>mumbl.<strong title="Array">version</strong></code></dt>
   <dd>
-    A string representing the version of the mumbl library being used.
+    An array with five items representing the version of the mumbl library being used.
+    The string representation of this array matches the regular expression,
+    <code>[0-9]+.[0-9]+.[0-9]+[ab]?[0-9]+?</code>.
   </dd>
 
-  <dt><code>mumbl.players</code></dt>
+  <dt><code>mumbl.<strong title="Object">players</strong></code></dt>
   <dd>An object populated with constants representing various players:
     <ul>
       <li><code>UNSUPPORTED</code></li>
-      <li><code>HTML5_AUDIO</code></li>
+      <li><code>HTML5</code></li>
       <li><code>SONGBIRD</code></li>
       <li><code>SOUNDMANAGER2</code></li>
     </ul>
   </dd>
 
-  <dt><code>mumbl.player</code></dt>
+  <dt><code>mumbl.<strong title="Number (non-negative integer)">player</strong></code></dt>
   <dd>The player from <code>mumbl.players</code> used to play audio.</dd>
 
-  <dt><code>mumbl.INTEGRATED</code></dt>
+  <dt><code>mumbl.<strong title="Boolean">integrated</strong></code></dt>
   <dd>
     A boolean value that represents if there is a native interface being used for the
     player.
   </dd>
 
-  <dt><code>mumbl._interface</code></dt>
+  <dt><code>mumbl.<strong title="?Object">interface</strong></code></dt>
   <dd>The interface to the player being used.</dd>
 </dl>
 
 ### Events
 
-Events can be subscribed to and unsubscribed from with `mumbl.addListener()` and
-`mumbl.removeListener()`. External events are events resulting from direct interaction
+Events can be subscribed to and unsubscribed from with `mumbl.observe()` and
+`mumbl.unobserve()`. External events are events resulting from direct interaction
 with a native interface for a player (like Songbird).
 
 <dl>
@@ -302,10 +325,11 @@ with a native interface for a player (like Songbird).
   <dd>This is dispatched when the player's shuffling state is externally changed.</dd>
 </dl>
 
-Note: There is no `ready` event which can be subscribed to with `mumbl.addListener()`. The
+
+Note: There is no `ready` event which can be subscribed to with `mumbl.observe()`. The
 `mumbl.onready()` subscription method should be used instead.
 
------
+------------------------------------------------------------------------------------------
 
 \* A TrackItemList is an array of TrackItems. A TrackItem is a list that follows the
 following format. When a TrackItem or a TrackItemList is specified as the only
@@ -330,20 +354,20 @@ file, just pass `null` in place of the media type.
 Roadmap
 -------
 
- * 0.1.1
+* 0.1.1
    * Better error handling.
    * A `loaderror` event.
- * A while after version 0.1 is released
+* A while after version 0.1 is released
    * Create a simple library that makes all MP3, OGG, WAV, etc. links be able to
      be played using mumbl.
    * Make the demo mumbl-powered music player (it will be renamed "mumblr")
      portable and reusable.
-     * Remove jQuery dependency from mumblr.
-     * Make the track title display scroll (maybe using a &lt;marquee&gt;) when
+    * Remove jQuery dependency from mumblr.
+    * Make the track title display scroll (maybe using a &lt;marquee&gt;) when
        it overflows.
- * Version 0.2
+* Version 0.2
    * Full compatability with every major browser.
- * The distant future (version 1.0)
+* The distant future (maybe version 1.0)
    * Create a simplified flash audio back-end for mumbl that integrates much more
      nicely and has a smaller file size than SoundManager2.
 

@@ -16,7 +16,7 @@ soundManager.useHighPerformance = true;
 if (/\bdefer-songbird\b/.test(location.hash)) {
 	window.songbird = void 0;
 }
-if (/[?&]defer-html5\b/.test(location.hash)) {
+if (/\bdefer-html5\b/.test(location.hash)) {
 	HTMLAudioElement.prototype.canPlayType = void 0;
 }
 if (/\bdefer-sm2\b/.test(location.hash)) {

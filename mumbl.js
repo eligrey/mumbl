@@ -1,6 +1,6 @@
 /*
- * mumbl JavaScript Library v0.1b3
- * 2009-12-21
+ * mumbl JavaScript Library v0.1
+ * 2010-04-03
  * By Elijah Grey, http://eligrey.com
  *
  * See README.md for help
@@ -11,7 +11,7 @@
 
 /*global self, setTimeout */
 
-/*jslint white: true, undef: true, eqeqeq: true, bitwise: true, regexp: true,
+/*jslint white: true, undef: true, eqeqeq: true, bitwise: true, regexp: true, nomen: true,
   strict: true, newcap: true, immed: true, maxerr: 1000, maxlen: 90 */
 
 // Ignore all of JSLint's "Expected an assignment or function call and instead
@@ -36,12 +36,13 @@
 
 "use strict";
 
-self.mumbl || (self.mumbl = (function (self) {
+self.mumbl = self.mumbl || (function (self) {
 	var
 	
 	// Fields:
 	$player            = "player",
-	$interface         = "_interface",
+	$players           = $player + "s",
+	$interface         = "interface",
 	
 	// Methods:
 	$play              = "play",
@@ -49,9 +50,9 @@ self.mumbl || (self.mumbl = (function (self) {
 	$pause             = "pause",
 	$position          = "position",
 	$volume            = "volume",
-	$playing           = "playing",
-	$stopped           = "stopped",
-	$paused            = "paused",
+	$playing           = $play  + "ing",
+	$stopped           = $stop  + "ped",
+	$paused            = $pause + "d",
 	$loop              = "loop",
 	$duration          = "duration",
 	$add_track         = "addTrack",
@@ -61,7 +62,7 @@ self.mumbl || (self.mumbl = (function (self) {
 	$previous          = "previous",
 	$clear             = "clear",
 	$track             = "track",
-	$tracks            = "tracks",
+	$tracks            = $track + "s",
 	$length            = "length",
 	$toggle_pause      = "togglePause",
 	$mute              = "mute",
@@ -73,7 +74,10 @@ self.mumbl || (self.mumbl = (function (self) {
 	played             = [],
 	
 	doc                = self.document,
-	audio_elem         = doc && doc.createElement("audio"),
+	audioElem          = doc && doc.createElement("audio"),
+	
+	math               = Math,
+	ArrayCtr           = Array,
 	
 	trackIndex         = 0,
 	looping            = 2, // 0 = no loop, 1 = loop track, 2 = loop playlist
@@ -81,60 +85,61 @@ self.mumbl || (self.mumbl = (function (self) {
 	volume             = 1,
 	playlistLen        = 0,
 	
-	True               = !0,
-	False              = !True,
+	TRUE               = !0,
+	FALSE              = !1,
+	NULL               = null,
 	
-	muted              = False,
-	stopped            = True,
-	paused             = True,
-	shuffled           = False,
+	stopped            = TRUE,
+	paused             = TRUE,
+	muted              = FALSE,
+	shuffled           = FALSE,
 	
-	$addEvtListener   = "addEventListener",
-	
-	$bool              = "boolean",
+	$add_evt_listener  = "addEventListener",
 	
 	playlist,
 	player,
 	
-	arrayIndexOf = Array.prototype.indexOf || function (elt) {
+	arrayIndexOf = ArrayCtr.prototype.indexOf || function (item) {
 		var len = this[$length],
 			i   = 0;
 		for (; i < len; i++) {
-			if (i in this && this[i] === elt) {
+			if (i in this && this[i] === item) {
 				return i;
 			}
 		}
 		return -1;
 	},
 	
+	hasOwnProp = Object.prototype.hasOwnProperty,
+	
 	mumbl  = {
-		version: [0, 1, 0, "b", 3], // 0.1.0b3
+		version: [0, 1, 0, "", ""], // 0.1.0
 		player: 0,
 		players: {
 			UNSUPPORTED   : 0,
-			HTML5_AUDIO   : 1,
+			HTML5         : 1,
 			SONGBIRD      : 2,
 			SOUNDMANAGER2 : 3,
 			addPlayer     : function (player) { // use this to add custom players
-				player = player.toUpperCase().replace(/\s+/g, "_");
-				if (!(player in this)) {
-					this[player] = players++;
+				player = player.toUpperCase().replace(/\s/g, "");
+				if (!(player in mumbl[$players])) {
+					mumbl[$players][player] = players++;
 				}
-				return this[player];
+				return mumbl[$players][player];
 			}
 		},
 		playerIs: function (player) {
-			return this.player === this.players[
-				player.toUpperCase().replace(/\s+/g, "_")
+			return mumbl.player === mumbl[$players][
+				player.toUpperCase().replace(/\s/g, "")
 			];
 		},
-		addListener: function (event, observer) {
-			if (typeof observer === "function" && events.hasOwnProperty(event)) {
-				events[event].unshift(observer);
+		observe: function (event, observer) {
+			if (hasOwnProp.call(events, event)) {
+				events[event].push(observer);
 			}
 		},
-		removeListener: function (eventType, observer) {
-			if (events.hasOwnProperty(eventType)) {
+		unobserve: function (eventType, observer) {
+			if (hasOwnProp.call(events, eventType)) {
 				var event = events[eventType],
 				indexOfObserver = arrayIndexOf.call(event, observer);
 				if (indexOfObserver !== -1) {
@@ -147,19 +152,16 @@ self.mumbl || (self.mumbl = (function (self) {
 			delete self.mumbl;
 		},
 		onready: function (callback, scope) {
+			scope = scope === NULL || typeof scope === "undefined" ? mumbl : scope;
 			if (mumbl.player !== 3) { // !mumbl.playerIs("SoundManager")
-				callback.call(
-					scope === null || typeof scope === "undefined" ? self : scope
-				);
+				callback.call(scope, mumbl);
 			} else {
-				player.onready(callback, scope);
+				player.onready(function () {
+					callback.call(scope, mumbl);
+				});
 			}
 		},
-		INTEGRATED: False
-	},
-	
-	isNan = function (n) {
-		return typeof n !== "number";
+		integrated: FALSE
 	},
 	
 	removeFromPlayed = function (track) {
@@ -174,7 +176,7 @@ self.mumbl || (self.mumbl = (function (self) {
 	},
 	
 	randomUnplayedTrack = function () {
-		var track = Math.floor(Math.random() * playlistLen);
+		var track = math.floor(math.random() * playlistLen);
 		if (arrayIndexOf.call(played, track) === -1) {
 			return track;
 		}
@@ -197,27 +199,34 @@ self.mumbl || (self.mumbl = (function (self) {
 	},
 	
 	slice = function (obj) {
-		return Array.prototype.slice.call(obj);
+		return ArrayCtr.prototype.slice.call(obj);
+	},
+	
+	createExceptionThrower = function (ex) {
+		return function () {
+			throw ex;
+		};
 	},
 	
 	dispatchEvent = function (eventType) {
 		var event = events[eventType],
-		i = event[$length];
-		if (i) {
-			while (i--) {
+		len = event[$length],
+		i = 0;
+		if (len) {
+			for (; i < len; i++) {
 				try {
 					event[i].call(mumbl, eventType);
 				} catch (ex) {
-					/*setTimeout(function () {
-						throw ex;
-					}, 0);*/
+					setTimeout(createExceptionThrower(ex), 0);
 				}
 			}
 		}
 	},
 	
-	eventDispatcher = function (event) {
-		events[event] = [];
+	createEventDispatcher = mumbl.createEventDispatcher = function (event) {
+		if (!hasOwnProp.call(events, event)) {
+			events[event] = [];
+		}
 		return function () {
 			dispatchEvent(event);
 		};
@@ -228,17 +237,17 @@ self.mumbl || (self.mumbl = (function (self) {
 	$canplay  = "canplay",
 	$external = "external",
 	
-	onTrackChange             = eventDispatcher($track),
-	onDurationUpdate          = eventDispatcher($duration),
-	onPositionUpdate          = eventDispatcher($position),
-	onTrackLoad               = eventDispatcher("load"),
-	onCanPlayTrack            = eventDispatcher($canplay),
-	onCanPlayThroughTrack     = eventDispatcher($canplay + "through"),
-	onExternalPlayStateChange = eventDispatcher($external + "playstate"),
-	onExternalVolumeChange    = eventDispatcher($external + "volume"),
-	onExternalMuteChange      = eventDispatcher($external + "mute"),
-	onExternalLoopingChange   = eventDispatcher($external + "looping"),
-	onExternalShufflingChange = eventDispatcher($external + "shuffling"),
+	onTrackChange             = createEventDispatcher($track),
+	onDurationUpdate          = createEventDispatcher($duration),
+	onPositionUpdate          = createEventDispatcher($position),
+	onCanPlayTrack            = createEventDispatcher($canplay),
+	onCanPlayThroughTrack     = createEventDispatcher($canplay + "through"),
+	onTrackLoad               = createEventDispatcher("load"),
+	onExternalPlayStateChange = createEventDispatcher($external + "playstate"),
+	onExternalVolumeChange    = createEventDispatcher($external + "volume"),
+	onExternalMuteChange      = createEventDispatcher($external + "mute"),
+	onExternalLoopingChange   = createEventDispatcher($external + "looping"),
+	onExternalShufflingChange = createEventDispatcher($external + "shuffling"),
 	
 	allTrackHandlers = function () {
 		onTrackChange();
@@ -247,7 +256,9 @@ self.mumbl || (self.mumbl = (function (self) {
 		onCanPlayTrack();
 		onCanPlayThroughTrack();
 		onTrackLoad();
-	};
+	},
+	
+	inited;
 	
 	mumbl.version.toString = function () {
 		return this.slice(0, 3).join(".") + this.slice(3, 5).join("");
@@ -276,16 +287,19 @@ self.mumbl || (self.mumbl = (function (self) {
 		} else {
 			if (played[$length] === playlistLen) { // played every track
 				if (looping === 2) {
-					played = [];
+					played[$length] = 0; // reset played
 				} else {
 					return;
 				}
 			}
+			
 			var track = arrayIndexOf.call(played, item()) + 1 && played.push(item());
 			if (played[track]) {
 				item(played[track]);
 			} else {
-				played[$length] === playlistLen && (played = []);
+				if (played[$length] === playlistLen) {
+					played[$length] = 0;
+				}
 				item(randomUnplayedTrack());
 			}
 		}
@@ -300,7 +314,10 @@ self.mumbl || (self.mumbl = (function (self) {
 			}
 		} else {
 			var track = arrayIndexOf.call(played, item());
-			track === -1 && (track = played.push(item()) - 1);
+			
+			if (track === -1) {
+				track = played.push(item()) - 1;
+			}
 			if (track) {
 				item(played[track - 1]);
 			} else {
@@ -316,7 +333,7 @@ self.mumbl || (self.mumbl = (function (self) {
 		}
 	};
 	mumbl[$shuffle] = function (state) {
-		if (typeof state !== $bool) {
+		if (!arguments[$length]) {
 			return shuffled;
 		}
 		shuffled = state;
@@ -335,20 +352,20 @@ self.mumbl || (self.mumbl = (function (self) {
 	
 	// developer note: To remove last-created library:
 	// songbird.siteLibrary.remove(songbird.siteLibrary.getPlaylists().getNext())
-	(self.songbird && (function () {
+	inited = (self.songbird && (function () {
 		player               = self.songbird;
 		
 		var currentTrack     = 0,
-		notSettingVolume     = True,
-		notChangingPlayState = True,
-		notMuting            = True,
-		notSettingShuffle    = True,
-		notSettingLooping    = True,
+		notSettingVolume     = TRUE,
+		notChangingPlayState = TRUE,
+		notMuting            = TRUE,
+		notSettingShuffle    = TRUE,
+		notSettingLooping    = TRUE,
 		library              = player.siteLibrary,
 		durationProp         = "http://songbirdnest.com/data/1.0#duration",
 		uriProp              = "http://purl.eligrey.com/mumbl#originURI",
 		anchor               = doc.createElement("a"),
-		isOGG                = /^a(?:udio|pplication)\/(?:x-)?ogg\s*;?/i,
+		isOGG                = /^\s*a(?:udio|pplication)\/(?:x-)?ogg\s*(?:$|;)/i,
 		addListener          = function (topic, observer) {
 			player.addListener(topic, {
 				observe: observer
@@ -368,7 +385,7 @@ self.mumbl || (self.mumbl = (function (self) {
 				parseInt(
 					track.getProperty(durationProp),
 					10
-				)  / 1000000 // convert microseconds to seconds
+				) / 1000000 // convert microseconds to seconds
 			) || 0;
 			
 			allTrackHandlers();
@@ -377,22 +394,18 @@ self.mumbl || (self.mumbl = (function (self) {
 		
 		mumbl[$player]    = 2; // mumbl.players.SONGBIRD
 		mumbl[$interface] = player;
-		mumbl.INTEGRATED  = True;
+		mumbl.integrated  = TRUE;
 		
 		mumbl[$play] = function () {
-			// TODO: remove this check once a stable Songbird release contains the fix
-			//       for http://bugzilla.songbirdnest.com/show_bug.cgi?id=17577
-			if (paused) {
-				notChangingPlayState = False;
-				player[$play]();
-				notChangingPlayState = True;
-			}
-			stopped = False;
+			notChangingPlayState = FALSE;
+			player[$play]();
+			notChangingPlayState = TRUE;
+			stopped = FALSE;
 		};
 		mumbl[$pause] = function () {
-			notChangingPlayState = False;
+			notChangingPlayState = FALSE;
 			player[$pause]();
-			notChangingPlayState = True;
+			notChangingPlayState = TRUE;
 		};
 		mumbl[$add_track] = function (uri) {
 			// Songbird can play anything gstreamer can but has issues with seeking OGG
@@ -414,9 +427,9 @@ self.mumbl || (self.mumbl = (function (self) {
 				}
 			}
 			anchor.href = uri;
-			var absURI = anchor.href; // get absolute location of uri
+			var absURI = anchor.href, // get absolute location of uri
+			mediaItem  = library.createMediaItem(absURI);
 			anchor.removeAttribute("href");
-			var mediaItem = library.createMediaItem(absURI);
 			mediaItem.setProperty(uriProp, uri);
 			playlist.add(mediaItem);
 			
@@ -425,61 +438,61 @@ self.mumbl || (self.mumbl = (function (self) {
 		mumbl[$stop] = function () {
 			player[$stop]();
 			duration = 0;
-			stopped = True;
+			stopped = TRUE;
 			allTrackHandlers();
 		};
 		mumbl[$mute] = function (state) {
-			if (typeof state !== $bool) {
+			if (!arguments[$length]) {
 				return muted;
 			}
-			notMuting = False;
+			notMuting = FALSE;
 			player[$mute] = muted = state;
-			notMuting = True;
+			notMuting = TRUE;
 		};
 		mumbl[$loop] = function (loopType) {
-			if (isNan(loopType)) {
+			if (!arguments[$length]) {
 				return looping;
 			}
-			notSettingLooping = False;
+			notSettingLooping = FALSE;
 			player.repeat = loopType;
-			notSettingLooping = True;
+			notSettingLooping = TRUE;
 		};
 		mumbl[$shuffle] = function (state) {
-			if (typeof state !== $bool) {
+			if (!arguments[$length]) {
 				return shuffled;
 			}
-			notSettingShuffle = False;
+			notSettingShuffle = FALSE;
 			player[$shuffle] = state;
-			notSettingShuffle = True;
+			notSettingShuffle = TRUE;
 		};
 		mumbl[$tracks] = function () {
 			// recreate playlist as a TrackItemList
 			var tracks = [],
-			    track  = playlistLen;
-			while (track--) {
-				tracks.unshift([playlist.getItemByIndex(track).getProperty(uriProp)]);
+			    i      = 0;
+			for (; i < playlistLen; i++) {
+				tracks.push([playlist.getItemByIndex(i).getProperty(uriProp), NULL]);
 			}
 			return tracks;
 		};
 		mumbl[$volume] = function (newVolume) {
-			if (isNan(newVolume)) {
+			if (!arguments[$length]) {
 				return volume;
 			}
-			notSettingVolume = False;
+			notSettingVolume = FALSE;
 			player[$volume] = newVolume * 255;
-			notSettingVolume = True;
+			notSettingVolume = TRUE;
 		};
 		mumbl[$track] = function (index) {
-			if (isNan(index)) {
+			if (!arguments[$length]) {
 				return trackIndex;
 			}
 			var wasPaused = paused;
-			notChangingPlayState = False;
+			notChangingPlayState = FALSE;
 			player.playMediaList(playlist, index);
 			if (wasPaused) {
 				mumbl[$pause]();
 			}
-			notChangingPlayState = True;
+			notChangingPlayState = TRUE;
 		};
 		mumbl[$remove_track] = function (index) {
 			playlist.removeByIndex(index);
@@ -494,7 +507,7 @@ self.mumbl || (self.mumbl = (function (self) {
 			return player[$playing];
 		};
 		mumbl[$position] = function (seconds) {
-			if (isNan(seconds)) {
+			if (!arguments[$length]) {
 				return player[$position] / 1000;
 			} else if (!mumbl[$stopped]()) {
 				if (seconds < 0) {
@@ -505,45 +518,55 @@ self.mumbl || (self.mumbl = (function (self) {
 			}
 		};
 		mumbl.destruct = function () {
-			self.removeEventListener("trackchange", onTrackChangeObserver, False);
+			self.removeEventListener("trackchange", onTrackChangeObserver, FALSE);
 			mumbl[$clear]();
 			library.remove(playlist);
-			self.removeEventListener("unload", mumbl.destruct, False);
+			self.removeEventListener("unload", mumbl.destruct, FALSE);
 			delete self.mumbl;
 		};
 		
 		addListener("faceplate." + $volume, function () {
 			volume = player[$volume] / 255;
-			notSettingVolume && onExternalVolumeChange();
+			if (notSettingVolume) {
+				onExternalVolumeChange();
+			}
 		});
 		addListener("faceplate." + $mute, function () {
 			muted = player[$mute];
-			notMuting && onExternalMuteChange();
+			if (notMuting) {
+				onExternalMuteChange();
+			}
 		});
 		addListener("faceplate." + $paused, function () {
 			paused = player[$paused];
-			notChangingPlayState && onExternalPlayStateChange();
+			if (notChangingPlayState) {
+				onExternalPlayStateChange();
+			}
 		});
 		addListener("playlist.repeat", function () {
 			looping = player.repeat;
-			notSettingLooping && onExternalLoopingChange();
+			if (notSettingLooping) {
+				onExternalLoopingChange();
+			}
 		});
 		addListener("playlist." + $shuffle, function () {
 			shuffled = player[$shuffle];
-			notSettingShuffle && onExternalShufflingChange();
+			if (notSettingShuffle) {
+				onExternalShufflingChange();
+			}
 		});
 		addListener("metadata." + $position, onPositionUpdate);
 		
 		// undocumented "trackchange" event:
 		// http://src.songbirdnest.com/source/xref/client/components/remoteapi/src/
 		// sbRemotePlayer.cpp#219
-		self[$addEvtListener]("trackchange", onTrackChangeObserver, False);
+		self[$add_evt_listener]("trackchange", onTrackChangeObserver, FALSE);
 		
-		self[$addEvtListener]("unload", mumbl.destruct, False);
+		self[$add_evt_listener]("unload", mumbl.destruct, FALSE);
 		
-		return (paused = (stopped = True));
-	}())) || (typeof audio_elem.canPlayType === "function" && (function () {
-		player   = audio_elem;
+		return (paused = (stopped = TRUE));
+	}())) || (typeof audioElem.canPlayType === "function" && (function () {
+		player   = audioElem;
 		playlist = [];
 		
 		var addEvent,
@@ -554,29 +577,11 @@ self.mumbl || (self.mumbl = (function (self) {
 				player.removeChild(nodes.item(i));
 			}
 			player.load();
-		},
-		// convert [[[1,2],[3,4]],[[5,6],[7,8]]] to [[1,2,3,4],[5,6,7,8]]
-		flatPlaylist = function () {
-			var track    = playlistLen,
-			newPlaylist  = [],
-			flatItem     = [],
-			items,
-			item;
-			while (track--) {
-				items = playlist[track];
-				item = items[$length];
-				while (item--) {
-					flatItem = items[item].concat(flatItem);
-				}
-				newPlaylist.unshift(flatItem);
-				flatItem = [];
-			}
-			return newPlaylist;
 		};
 		
-		if (player[$addEvtListener]) {
+		if (player[$add_evt_listener]) {
 			addEvent = function (event, observer) {
-				player[$addEvtListener](event, observer, False);
+				player[$add_evt_listener](event, observer, FALSE);
 			};
 		} else if (player.attachEvent) {
 			// you never know, IE might actually add support for HTML5 audio
@@ -591,14 +596,14 @@ self.mumbl || (self.mumbl = (function (self) {
 		
 		mumbl[$play] = function () {
 			player[$play]();
-			(paused = stopped = False);
+			(paused = stopped = FALSE);
 		};
 		mumbl[$pause] = function () {
 			player[$pause]();
-			paused = !(stopped = False);
+			paused = !(stopped = FALSE);
 		};
 		mumbl[$stop] = function () {
-			stopped = True;
+			stopped = TRUE;
 			duration = 0;
 			clearChildren();
 			allTrackHandlers();
@@ -625,40 +630,55 @@ self.mumbl || (self.mumbl = (function (self) {
 			removeFromPlayed(index);
 		};
 		mumbl[$tracks] = function () {
-			return flatPlaylist();
+			// convert [[[1,2],[3,4]],[[5,6],[7,8]]] to [[1,2,3,4],[5,6,7,8]]
+			var flatItem = [],
+			flatPlaylist = [],
+			i            = 0,
+			items, item;
+			for (; i < playlistLen; i++) {
+				items = playlist[i];
+				item = items[$length];
+				while (item--) {
+					flatItem = items[item].concat(flatItem);
+				}
+				flatPlaylist.push(flatItem);
+				flatItem.length = 0;
+			}
+			return flatPlaylist;
 		};
 		mumbl[$loop] = function (state) {
-			if (isNan(state)) {
+			if (!arguments[$length]) {
 				return looping;
 			}
-			(looping = state) && player.ended &&
+			if ((looping = state) && player.ended) {
 				onEnded();
+			}
 		};
 		mumbl[$mute] = function (state) {
-			if (typeof state !== $bool) {
+			if (!arguments[$length]) {
 				return player.muted;
 			}
 			muted = player.muted = state;
 		};
 		mumbl[$track] = function (index) {
-			if (isNan(index)) {
+			if (!arguments[$length]) {
 				return trackIndex;
 			}
 			var items = playlist[index],
 			len = items[$length],
 			source,
 			i = 0;
-			
 			clearChildren();
 			for (; i < len; i++) {
 				source = doc.createElement("source");
 				source.setAttribute("src", items[i][0]);
-				items[i][1] &&
+				if (items[i][1]) {
 					source.setAttribute("type", items[i][1]);
+				}
 				player.appendChild(source);
 			}
 			trackIndex = index;
-			stopped = False;
+			stopped = FALSE;
 			player.load();
 			if (paused) {
 				player[$pause]();
@@ -666,7 +686,7 @@ self.mumbl || (self.mumbl = (function (self) {
 			onTrackChange();
 		};
 		mumbl[$position] = function (seconds) {
-			if (isNan(seconds)) {
+			if (!arguments[$length]) {
 				return player.currentTime;
 			} else if (!stopped) {
 				if (seconds < 1) {
@@ -677,7 +697,7 @@ self.mumbl || (self.mumbl = (function (self) {
 			}
 		};
 		mumbl[$volume] = function (vol) {
-			if (isNan(vol)) {
+			if (!arguments[$length]) {
 				return volume;
 			}
 			volume = player[$volume] = vol;
@@ -695,21 +715,17 @@ self.mumbl || (self.mumbl = (function (self) {
 		addEvent("canplaythrough", onCanPlayThroughTrack);
 		addEvent("ended", onEnded);
 		
-		return (player.autoplay = True);
+		return (player.autoplay = TRUE);
 	}())) || (self.soundManager && (function () {
 		// http://www.schillmania.com/projects/soundmanager2/doc/
 		player   = self.soundManager;
 		playlist = [];
 		
-		player.useFastPolling = player.allowPolling = True;
+		player.useFastPolling = player.allowPolling = TRUE;
 		
 		var sounds     = player.sounds,
 		mumblNS        = "mumbl:",
-		Null           = null,
 		currentTrackId,
-		// matches MP3, AAC (not AACP), Speex, and ADPCM media types
-		// http://en.wikipedia.org/wiki/Flash_Video#Codec_support
-		codecs = /^audio\/(?:x-)?(?:mp(?:eg|3)|mp4a-latm|aac|speex|(?:32k)?adpcm)\s*;?/i,
 		getCurrentTrack = function () {
 			return sounds[currentTrackId];
 		},
@@ -721,36 +737,50 @@ self.mumbl || (self.mumbl = (function (self) {
 				allTrackHandlers();
 			}
 		},
-		canPlayThrough = function () {
-			var track = getCurrentTrack();
-			track._iO.whileplaying = onPositionUpdate; // _iO is options
-			if (stopped || paused) {
-				track[$pause]();
-				track.setPosition(0);
-			}
-			onDurationUpdate();
-			onCanPlayThroughTrack();
+		createReadyHandler = function (trackId) {
+			var track = sounds[trackId],
+			    ready = FALSE;
+			return function () {
+				if (ready) {
+					onDurationUpdate();
+				} else if (track[$duration] > track[$position] - 1) {
+					// > 1 second is loaded
+					ready = TRUE;
+					onDurationUpdate();
+					onCanPlayTrack();
+				}
+			};
 		},
-		readyCheck = function () {
-			var track = getCurrentTrack();
-			if (track[$duration] > track[$position] - 1) { // > 1 second is loaded
-				(track._iO.whileloading = onDurationUpdate)();
-				onCanPlayTrack();
-			}
+		createPlayingHandler = function (trackId) {
+			var track = sounds[trackId],
+			    ready = FALSE;
+			return function () {
+				if (ready) {
+					onPositionUpdate();
+				} else {
+					ready = TRUE;
+					if (stopped || paused) {
+						track[$pause]();
+						track.setPosition(0);
+					}
+					onDurationUpdate();
+					onCanPlayThroughTrack();
+				}
+			};
 		},
 		SM2SoundOpts = function (uri) {
-			var opts = this;
-			opts.id = mumblNS + (opts.url = uri);
+			var opts = this,
+			trackId  = opts.id = mumblNS + (opts.url = uri);
 			
-			// for some reason, SM2 disregards inherited properties, so
-			// don't use SoundOpts.prototype
+			// SM2 disregards inherited properties, so don't use SoundOpts.prototype
+			
 			// callbacks
 			opts.onload                 = allTrackHandlers;
-			opts.whileloading           = readyCheck;
-			opts.whileplaying           = canPlayThrough;
+			opts.whileloading           = createReadyHandler(trackId);
+			opts.whileplaying           = createPlayingHandler(trackId);
 			opts.onfinish               = onEnded;
 			
-			opts.stream                 = True;
+			opts.stream                 = TRUE;
 			
 			// null
 			opts.onplay                 = 
@@ -761,17 +791,17 @@ self.mumbl || (self.mumbl = (function (self) {
 			opts.onbeforefinish         = 
 			opts.onbeforefinishcomplete = 
 			opts.onjustbeforefinish     = 
-			opts.position               = Null;
+			opts.position               = NULL;
 			
 			// false
 			opts.autoLoad               = 
 			opts.multiShot              = 
 			opts.multiShotEvents        = 
-			opts.autoPlay               = False;
+			opts.autoPlay               = FALSE;
 			
 			// ints
-			opts.onbeforefinishtime     = 5000;
-			opts.onjustbeforefinishtime = 200;
+			opts.onbeforefinishtime     = // default 5000
+			opts.onjustbeforefinishtime = // default 200
 			opts.pan                    = 0;
 			opts.volume                 = 100;
 		};
@@ -783,45 +813,52 @@ self.mumbl || (self.mumbl = (function (self) {
 			var track = getCurrentTrack();
 			if (track && (stopped || paused)) {
 				track.resume();
-				stopped = paused = False;
+				stopped = paused = FALSE;
 			}
 		};
 		mumbl[$pause] = function () {
 			getCurrentTrack()[$pause]();
-			paused = True;
+			paused = TRUE;
 		};
 		mumbl[$stop] = function () {
 			getCurrentTrack()[$stop]();
-			paused = stopped = True;
+			paused = stopped = TRUE;
 		};
 		mumbl[$loop] = function (state) {
-			if (isNan(state)) {
+			if (!arguments[$length]) {
 				return looping;
 			}
-			(looping = state) &&
-				Math.floor(mumbl[$position]() / mumbl[$duration]()) === 1 && onEnded();
+			if ((looping = state) &&
+			    math.floor(mumbl[$position]() / mumbl[$duration]()) === 1)
+			{
+				onEnded();
+			}
 		};
 		mumbl[$position] = function (seconds) {
-			if (isNan(seconds)) {
+			if (!arguments[$length]) {
 				return getCurrentTrack()[$position] / 1000 || 0;
 			}
 			getCurrentTrack().setPosition(seconds * 1000);
 		};
 		mumbl[$volume] = function (vol) {
-			if (isNan(vol)) {
+			if (!arguments[$length]) {
 				return volume;
 			}
 			volume = vol;
-			currentTrackId && getCurrentTrack().setVolume(vol * 100);
+			if (currentTrackId) {
+				getCurrentTrack().setVolume(vol * 100);
+			}
 		};
 		mumbl[$track] = function (index) {
-			if (isNan(index)) {
+			if (!arguments[$length]) {
 				return trackIndex;
 			}
 			if (playlistLen) {
 				var sound = sounds[playlist[index]];
 				if (sound) {
-					currentTrackId && getCurrentTrack()[$stop]();
+					if (currentTrackId) {
+						getCurrentTrack()[$stop]();
+					}
 					playSound(sound);
 					currentTrackId = playlist[trackIndex = index];
 					onTrackChange();
@@ -830,14 +867,14 @@ self.mumbl || (self.mumbl = (function (self) {
 		};
 		mumbl[$tracks] = function () {
 			var tracks = [],
-			    track  = playlistLen;
-			while (track--) {
-				tracks.unshift([playlist[track].substr(6)]); // 6 == mumblNS.length
+			    i      = 0;
+			for (; i < playlistLen; i++) {
+				tracks.push([playlist[i].substr(6), NULL]); // 6 === mumblNS.length
 			}
 			return tracks;
 		};
 		mumbl[$mute] = function (state) {
-			if (typeof state !== $bool) {
+			if (!arguments[$length]) {
 				return getCurrentTrack().muted;
 			}
 			getCurrentTrack()[(state ? "" : "un") + $mute]();
@@ -851,12 +888,11 @@ self.mumbl || (self.mumbl = (function (self) {
 				len = args[$length],
 				file,
 				i = 0;
-				
 				for (; i < len; i += 2) {
 					file = args.slice(i, i + 2);
 					// file[0] = file URI
 					// file[1] = file media type
-					if (codecs.test(file[1])) {
+					if (player.canPlayMIME(file[1])) {
 						uri = file[0];
 						break;
 					}
@@ -876,9 +912,9 @@ self.mumbl || (self.mumbl = (function (self) {
 			while (i--) {
 				mumbl[$remove_track](i);
 			}
-			currentTrackId = False;
+			currentTrackId = FALSE;
 		};
 	}()));
 	
 	return mumbl;
-}(self)));
+}(self));

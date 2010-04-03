@@ -2,7 +2,7 @@
 
 // XXX: make a portable library out of this mess
 
-mumbl.onready(function () {
+mumbl.onready(function (mumbl) {
 	var $ = jQuery,
 	window = this,
 	playlist = [
@@ -25,14 +25,14 @@ mumbl.onready(function () {
 	}
 	
 	if (mumbl.playerIs("Songbird")) {
-	// stop Songbird from making it's own playlist out of the links on the page
+		// stop Songbird from making it's own playlist out of the links on the page
 		$("#playlist a").attr("href", "#");
 	}
 	
-	if (mumbl.INTEGRATED || mumbl.playerIs("unsupported")) {
+	if (mumbl.integrated || mumbl.playerIs("unsupported")) {
 		// hide interface if there is a native interface or if mumbl is unsupported
 		$("#mumbl-player").hide();
-		if (mumbl.INTEGRATED) {
+		if (mumbl.integrated) {
 			mumbl.track(0);
 		}
 		return;
@@ -214,8 +214,8 @@ mumbl.onready(function () {
 	playBtn.click(playBtnClick);
 	shuffleBtn.click(shuffleBtnClick);
 	
-	if (!mumbl.INTEGRATED) { // don't listen for this info if there's already a UI
-		mumbl.addListener("position", function() {
+	if (!mumbl.integrated) { // don't listen for this info if there's already a UI
+		mumbl.observe("position", function() {
 			var position = mumbl.position();
 			if (position !== lastPosition) {
 				progress.progressbar("value", (position / duration * 100) || 0);
@@ -223,13 +223,11 @@ mumbl.onready(function () {
 			}
 			trackPosition.text(toMinsSecs(mumbl.position()));
 		});
-	
-		mumbl.addListener("duration", function() {
+		mumbl.observe("duration", function() {
 			duration = mumbl.duration();
 			trackDuration.text(toMinsSecs(duration));
 		});
-	
-		mumbl.addListener("track", function() {
+		mumbl.observe("track", function() {
 			trackTitle.text(playlist[mumbl.track()] + " - " + playlist.album + " - " + playlist.artist);
 		});
 	}
