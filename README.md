@@ -72,7 +72,7 @@ them) containing their type if they are not functions or return type if they are
     Uninitializes mumbl. <code>window.mumbl</code> will be deleted.
   </dd>
 
-  <dt><code>mumbl.<strong title="Number">duration</strong>()</code></dt>
+  <dt><code>mumbl.<strong title="Number (non-negative)">duration</strong>()</code></dt>
   <dd>
     Returns the duration in seconds of the currently selected track.
   </dd>
@@ -162,12 +162,12 @@ them) containing their type if they are not functions or return type if they are
     player ID of the newly added player is returned.
   </dd>
 
-  <dt><code>mumbl.<strong title="Number">position</strong>()</code></dt>
+  <dt><code>mumbl.<strong title="Number (non-negative)">position</strong>()</code></dt>
   <dd>
     Returns the current seek position, in seconds, of the currently selected track.
   </dd>
 
-  <dt><code>mumbl.<strong title="void">position</strong>(<strong title="Number">newPosition</strong>)</code></dt>
+  <dt><code>mumbl.<strong title="void">position</strong>(<strong title="Number (non-negative)">newPosition</strong>)</code></dt>
   <dd>
     The currently selected track will seek to <code>newPosition</code>, in seconds.
   </dd>
