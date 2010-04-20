@@ -57,7 +57,7 @@ self.mumbl = self.mumbl || (function (self) {
 	$duration          = "duration",
 	$add_track         = "addTrack",
 	$remove_track      = "removeTrack",
-	$add_tracks        = "addTracks",
+	$add_tracks        = $add_track + "s",
 	$next              = "next",
 	$previous          = "previous",
 	$clear             = "clear",
@@ -703,7 +703,6 @@ self.mumbl = self.mumbl || (function (self) {
 			volume = player[$volume] = vol;
 		};
 		
-		doc.documentElement.appendChild(player);
 		addEvent($duration + "change", function () {
 			duration = player[$duration];
 			onDurationUpdate();
