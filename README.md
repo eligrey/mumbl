@@ -372,6 +372,9 @@ Roadmap
      nicely and has a smaller file size than SoundManager2.
 
 
+![Tracking image](//in.getclicky.com/212712ns.gif =1x1)
+
+
   [contact]: http://github.com/eligrey
   [demo]: http://purl.eligrey.com/mumbl/demo
   [sb]: http://getsongbird.com/
