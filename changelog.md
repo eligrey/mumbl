@@ -1,6 +1,16 @@
 mumbl Changelog
 ===============
 
+0.1.1b1
+-------
+
+* Added better support for assigning media position in Songbird builds that have [bug
+  21122](http://bugzilla.songbirdnest.com/show_bug.cgi?id=21122) fixed.
+* Added support for getting the duration of the currently-playing media through
+  `songbird.duration` in Songbird builds that have
+  [bug 17578](http://bugzilla.songbirdnest.com/show_bug.cgi?id=17578) fixed.
+
+
 0.1
 ---
 

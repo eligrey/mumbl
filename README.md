@@ -1,7 +1,7 @@
 mumbl
 =====
 
-*Version 0.1*
+*Version 0.1.1b1*
 
 **mumbl** is a JavaScript library that makes it easy to play music and create playlists
 on web pages.

@@ -1,7 +1,7 @@
 /*
- * mumbl JavaScript Library v0.1
- * 2010-04-03
- * By Elijah Grey, http://eligrey.com
+ * mumbl JavaScript Library v0.1.1b1
+ * 2010-05-27
+ * By Eli Grey, http://eligrey.com
  *
  * See README.md for help
  *
@@ -14,17 +14,18 @@
 /*jslint white: true, undef: true, eqeqeq: true, bitwise: true, regexp: true, nomen: true,
   strict: true, newcap: true, immed: true, maxerr: 1000, maxlen: 90 */
 
-// Ignore all of JSLint's "Expected an assignment or function call and instead
-// saw an expression" errors as the code is perfectly valid.
-
 /* Relevant Player Bugs
  *
  * Songbird:
+ *  - [FIXED] http://bugzilla.songbirdnest.com/show_bug.cgi?id=21122
+ *      Assignments to songbird.position get reverted
  *  - [FIXED] http://bugzilla.songbirdnest.com/show_bug.cgi?id=17577
  *      songbird.play() crashes Songbird unless playing and paused
- *  - http://bugzilla.songbirdnest.com/show_bug.cgi?id=17578
+ *  - [FIXED] http://bugzilla.songbirdnest.com/show_bug.cgi?id=17578
  *      songbird.duration or songbird.length needed for currently playing song
- *  - http://bugzilla.songbirdnest.com/show_bug.cgi?id=17582
+ *  - [FIXED] http://bugzilla.songbirdnest.com/show_bug.cgi?id=21122
+ *      Assignments to songbird.position get reverted
+ *  - [FIXED] http://bugzilla.songbirdnest.com/show_bug.cgi?id=17582
  *      accessing dataremotes through remoteapi via observers throws exception
  *  - http://bugzilla.songbirdnest.com/show_bug.cgi?id=15169
  *      Ogg-in-Flac files do not show track duration time
@@ -113,7 +114,7 @@ self.mumbl = self.mumbl || (function (self) {
 	hasOwnProp = Object.prototype.hasOwnProperty,
 	
 	mumbl  = {
-		version: [0, 1, 0, "", ""], // 0.1.0
+		version: [0, 1, 1, "b", 1], // 0.1.1b1
 		player: 0,
 		players: {
 			UNSUPPORTED   : 0,
@@ -350,8 +351,6 @@ self.mumbl = self.mumbl || (function (self) {
 		return duration;
 	};
 	
-	// developer note: To remove last-created library:
-	// songbird.siteLibrary.remove(songbird.siteLibrary.getPlaylists().getNext())
 	inited = (self.songbird && (function () {
 		player               = self.songbird;
 		
@@ -361,9 +360,11 @@ self.mumbl = self.mumbl || (function (self) {
 		notMuting            = TRUE,
 		notSettingShuffle    = TRUE,
 		notSettingLooping    = TRUE,
+		canSetPosition       = TRUE,
 		library              = player.siteLibrary,
 		durationProp         = "http://songbirdnest.com/data/1.0#duration",
 		uriProp              = "http://purl.eligrey.com/mumbl#originURI",
+		faceplateEventType   = "faceplate.",
 		anchor               = doc.createElement("a"),
 		isOGG                = /^\s*a(?:udio|pplication)\/(?:x-)?ogg\s*(?:$|;)/i,
 		addListener          = function (topic, observer) {
@@ -371,26 +372,18 @@ self.mumbl = self.mumbl || (function (self) {
 				observe: observer
 			});
 		},
-		playlist = library.createSimpleMediaList("mumbl");
+		playlist = library.createSimpleMediaList("mumbl"),
+		tempPos;
 		playlist[$clear](); // just in case it wasn't cleared previously (browser crash)
 		
-		var onTrackChangeObserver = function (evt) {
-			var track = evt.item;
-			if (!playlist.contains(track)) {
-				return;
-			}
-			currentTrack = track;
-			trackIndex   = playlist.indexOf(track);
-			duration     = (
-				parseInt(
-					track.getProperty(durationProp),
-					10
-				) / 1000000 // convert microseconds to seconds
-			) || 0;
-			
-			allTrackHandlers();
-		};
-		
+		try { // This throws an error pre-bug 21122 fix
+			tempPos = player[$position];
+			player[$position] = 0;
+			player[$position] = tempPos;
+			tempPos = NULL;
+		} catch (e) {
+			canSetPosition = FALSE;
+		}
 		
 		mumbl[$player]    = 2; // mumbl.players.SONGBIRD
 		mumbl[$interface] = player;
@@ -509,35 +502,33 @@ self.mumbl = self.mumbl || (function (self) {
 		mumbl[$position] = function (seconds) {
 			if (!arguments[$length]) {
 				return player[$position] / 1000;
-			} else if (!mumbl[$stopped]()) {
+			} else if (canSetPosition && !mumbl[$stopped]()) {
 				if (seconds < 0) {
 					seconds = 0;
 				}
-				// can't set it as of v1.4 but can in future
-				player[$position] = 1 + (seconds * 1000); // convert seconds to ms
+				// Only works in builds with Songbird bug 21122 fixed
+				player[$position] = seconds * 1000; // convert seconds to ms
 			}
 		};
 		mumbl.destruct = function () {
-			self.removeEventListener("trackchange", onTrackChangeObserver, FALSE);
 			mumbl[$clear]();
 			library.remove(playlist);
-			self.removeEventListener("unload", mumbl.destruct, FALSE);
 			delete self.mumbl;
 		};
 		
-		addListener("faceplate." + $volume, function () {
+		addListener(faceplateEventType + $volume, function () {
 			volume = player[$volume] / 255;
 			if (notSettingVolume) {
 				onExternalVolumeChange();
 			}
 		});
-		addListener("faceplate." + $mute, function () {
+		addListener(faceplateEventType + $mute, function () {
 			muted = player[$mute];
 			if (notMuting) {
 				onExternalMuteChange();
 			}
 		});
-		addListener("faceplate." + $paused, function () {
+		addListener(faceplateEventType + $paused, function () {
 			paused = player[$paused];
 			if (notChangingPlayState) {
 				onExternalPlayStateChange();
@@ -557,10 +548,32 @@ self.mumbl = self.mumbl || (function (self) {
 		});
 		addListener("metadata." + $position, onPositionUpdate);
 		
-		// undocumented "trackchange" event:
-		// http://src.songbirdnest.com/source/xref/client/components/remoteapi/src/
-		// sbRemotePlayer.cpp#219
-		self[$add_evt_listener]("trackchange", onTrackChangeObserver, FALSE);
+		self[$add_evt_listener]("trackchange", function (evt) {
+			var track = evt.item;
+			if (!playlist.contains(track)) {
+				return;
+			}
+			currentTrack = track;
+			trackIndex   = playlist.indexOf(track);
+			
+			allTrackHandlers();
+		}, FALSE);
+		
+		if ($duration in player) { // Songbird bug 17578 fixed
+			mumbl[$duration] = function () {
+				return player[$duration] * 1000; // convert ms to seconds
+			};	
+		} else {
+			self[$add_evt_listener]("trackchange", function (evt) {
+				duration     = (
+					parseInt(
+						evt.item.getProperty(durationProp),
+						10
+					) / 1000000 // convert microseconds to seconds
+				) || 0;
+				onDurationUpdate();
+			}, FALSE);
+		}
 		
 		self[$add_evt_listener]("unload", mumbl.destruct, FALSE);
 		
