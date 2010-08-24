@@ -25,8 +25,8 @@ Supported Platforms
 * [SoundManager 2][sm2] version 2.95b.20100323 or higher
 
 
-Supported Platforms
--------------------
+Supported Browsers
+------------------
 
 * HTML5
     * Firefox 3.5+
