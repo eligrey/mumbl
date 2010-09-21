@@ -35,6 +35,8 @@
  *      layout test fails because "ended" event is not triggered when video plays to end
  */
 
+/*! @source http://purl.eligrey.com/github/mumbl/blob/master/mumbl.js*/
+
 "use strict";
 
 self.mumbl = self.mumbl || (function (self) {
