@@ -354,13 +354,14 @@ file, just pass `null` in place of the media type.
 Roadmap
 -------
 
-* 0.1.1
+* 0.1.2
+   * Use SM2 fallback when HTML5 is supported but none of the media types provided to mumbl are supported.
    * Better error handling.
    * A `loaderror` event.
 * A while after version 0.1 is released
    * Create a simple library that makes all MP3, OGG, WAV, etc. links be able to
      be played using mumbl.
-   * Make the demo mumbl-powered music player (it will be renamed "mumblr")
+   * Make the demo mumbl-powered music player (it might be renamed "mumblr")
      portable and reusable.
     * Remove jQuery dependency from mumblr.
     * Make the track title display scroll (maybe using a &lt;marquee&gt;) when
