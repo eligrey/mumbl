@@ -1,6 +1,12 @@
 mumbl Changelog
 ===============
 
+0.1.1b2
+-------
+
+* Fixed [issue #2](http://github.com/eligrey/mumbl/issues#issue/2 "mumbl.tracks() returns empty arrays when using HTML5").
+
+
 0.1.1b1
 -------
 
@@ -183,4 +189,3 @@ mumbl Changelog
   other formats specified).
 * **Songbird**: `play` now checks to see if `songbird.paused` is true before playing
   (otherwise Songbird used to crash).
-
