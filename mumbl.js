@@ -1,6 +1,6 @@
 /*
- * mumbl JavaScript Library v0.1.1b1
- * 2010-05-27
+ * mumbl JavaScript Library v0.1.1b2
+ * 2010-10-28
  * By Eli Grey, http://eligrey.com
  *
  * See README.md for help
@@ -11,7 +11,7 @@
 /*global self, setTimeout */
 
 /*jslint white: true, undef: true, eqeqeq: true, bitwise: true, regexp: true, nomen: true,
-  strict: true, newcap: true, immed: true, maxerr: 1000, maxlen: 90 */
+  strict: true, newcap: true, immed: true, maxlen: 90 */
 
 /* Relevant Player Bugs
  *
@@ -115,7 +115,7 @@ self.mumbl = self.mumbl || (function (self) {
 	hasOwnProp = Object.prototype.hasOwnProperty,
 	
 	mumbl  = {
-		version: [0, 1, 1, "b", 1], // 0.1.1b1
+		version: [0, 1, 1, "b", 2], // 0.1.1b2
 		player: 0,
 		players: {
 			UNSUPPORTED   : 0,
@@ -655,7 +655,7 @@ self.mumbl = self.mumbl || (function (self) {
 				while (item--) {
 					flatItem = items[item].concat(flatItem);
 				}
-				flatPlaylist.push(flatItem);
+				flatPlaylist.push(flatItem.slice(0));
 				flatItem.length = 0;
 			}
 			return flatPlaylist;
