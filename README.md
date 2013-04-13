@@ -10,8 +10,9 @@ on web pages.
 Demo
 ----
 
-A demo is included with mumbl but if you dont want to download it, there is also an
-[online demo][demo].
+A reference player demo is included with mumbl but if you dont want to download it,
+there is also an [online demo][demo]. The demo player requires jQuery 1.5, but if you
+only need to use mumbl.js base you do not need jQuery.
 
 Please note that mumbl is not the player in the demo. mumbl is the *back-end* and the
 demo is just an example of using mumbl.
@@ -23,8 +24,6 @@ Supported Platforms
 * HTML5 &lt;audio/&gt;
 * [Songbird][sb]
 * [SoundManager 2][sm2] version 2.95b.20100323 or higher
-
-mumbl requires jQuery 1.5.
 
 Supported Browsers
 ------------------
