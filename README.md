@@ -18,10 +18,10 @@ Please note that mumbl is not the player in the demo. mumbl is the *back-end* an
 demo is just an example of using mumbl.
 
 
-Production Sites
-----------------
+Example mumble-Powered Sites
+----------------------------
 
-* [Kulesh Photography](kulesh)
+* [Kulesh Photography][kulesh]
 
 Supported Platforms
 -------------------
