@@ -24,6 +24,7 @@ Supported Platforms
 * [Songbird][sb]
 * [SoundManager 2][sm2] version 2.95b.20100323 or higher
 
+mumbl requires jQuery 1.5.
 
 Supported Browsers
 ------------------
