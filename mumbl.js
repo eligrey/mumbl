@@ -4,8 +4,8 @@
  * By Eli Grey, http://eligrey.com
  *
  * See README.md for help
- * Licensed under the X11/MIT License
- *   See LICENSE.md
+ * Licensed under the MIT License
+ *   See https://github.com/eligrey/mumbl/blob/master/LICENSE.md
  */
 
 /*global self, setTimeout */
